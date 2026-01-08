@@ -275,20 +275,6 @@ class ACLSchema(BaseModel):
     users_acl: Optional[List['UserACLBase']] = Field(default_factory=list)
 
 
-class PropagatingACL(BaseModel):
-    """Represents a PropagatingACL in the Iconik system."""
-    object_key: Optional[str] = None
-    object_type: Optional[str] = None
-    permissions: List[str]
-    user_id: Optional[UUID] = None
-
-
-class GroupACLBase(BaseModel):
-    """Represents a GroupACLBase in the Iconik system."""
-    group_id: Optional[UUID] = None
-    permissions: List[str]
-
-
 class UserACLBase(BaseModel):
     """Represents a UserACLBase in the Iconik system."""
     permissions: List[str]
@@ -300,6 +286,20 @@ class PropagatingGroupACL(BaseModel):
     group_id: Optional[UUID] = None
     object_key: Optional[str] = None
     object_type: Optional[str] = None
+    permissions: List[str]
+
+
+class PropagatingACL(BaseModel):
+    """Represents a PropagatingACL in the Iconik system."""
+    object_key: Optional[str] = None
+    object_type: Optional[str] = None
+    permissions: List[str]
+    user_id: Optional[UUID] = None
+
+
+class GroupACLBase(BaseModel):
+    """Represents a GroupACLBase in the Iconik system."""
+    group_id: Optional[UUID] = None
     permissions: List[str]
 
 
@@ -338,7 +338,7 @@ ACLsSchema.model_rebuild()
 ACLTemplatesSchema.model_rebuild()
 ACLTemplateSchema.model_rebuild()
 ACLSchema.model_rebuild()
-PropagatingACL.model_rebuild()
-GroupACLBase.model_rebuild()
 UserACLBase.model_rebuild()
 PropagatingGroupACL.model_rebuild()
+PropagatingACL.model_rebuild()
+GroupACLBase.model_rebuild()

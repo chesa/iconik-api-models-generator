@@ -65,7 +65,7 @@ class JobsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -81,9 +81,116 @@ class JobsPrioritySchema(BaseModel):
     priority: int = Field(..., ge=1, le=10)
 
 
+class JobsBulkParamsSchema(BaseModel):
+    """Represents a JobsBulkParamsSchema in the Iconik system."""
+    _exists_: Optional[List[str]] = Field(default_factory=list)
+    _missing_: Optional[List[str]] = Field(default_factory=list)
+    created_by: Optional[List[UUID]] = Field(default_factory=list)
+    date_created: Optional[str] = None
+    date_modified: Optional[str] = None
+    ids: Optional[List[UUID]] = Field(default_factory=list)
+    metadata.automation_id: Optional[str] = None
+    object_id: Optional[UUID] = None
+    parent_id: Optional[UUID] = None
+    query: Optional[str] = None
+    type: Optional[List[Literal['MEDIAINFO', 'TRANSCODE', 'KEYFRAMES', 'EXPORT',
+                                'DELETE', 'REINDEX', 'MOVE', 'TRANSFER',
+                                'ANALYZE', 'METADATA', 'CUSTOM', 'SCAN',
+                                'ARCHIVE', 'RESTORE', 'RESTORE_FROM_GLACIER',
+                                'ACL', 'COPY', 'TRANSCRIPTION',
+                                'REQUEST_COLLECTION_MAP',
+                                'COLLECTION_CUSTOM_ORDER',
+                                'STORAGE_GATEWAY_FILE_INGEST', 'MARK_MISSING',
+                                'FACE_RECOGNITION', 'SET_APPROVAL',
+                                'REQUEST_APPROVAL', 'CHANGE_PERSON',
+                                'CONFIRM_PERSON', 'DELETE_PERSON', 'AUTOMATION',
+                                'REVIEW_REQUEST',
+                                'CONVERT_SAVED_SEARCH_TO_COLLECTION',
+                                'DELETE_JOBS', 'EDIT_JOBS']]
+                   ] = Field(default_factory=list)
+
+
+class JobsBulkEditSchema(BaseModel):
+    """Represents a JobsBulkEditSchema in the Iconik system."""
+    error_message: Optional[str] = None
+    job_context: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    message: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    status: Optional[Literal['READY', 'STARTED', 'FINISHED',
+                             'FINISHED_WITH_WARNING', 'FAILED', 'WAITING',
+                             'ABORT_PENDING', 'ABORTED', 'SKIPPED',
+                             'PAUSED']] = None
+
+
+class JobsBulkEditParamsSchema(BaseModel):
+    """Represents a JobsBulkEditParamsSchema in the Iconik system."""
+    _exists_: Optional[List[str]] = Field(default_factory=list)
+    _missing_: Optional[List[str]] = Field(default_factory=list)
+    created_by: Optional[List[UUID]] = Field(default_factory=list)
+    date_created: Optional[str] = None
+    date_modified: Optional[str] = None
+    ids: Optional[List[UUID]] = Field(default_factory=list)
+    merge_metadata: Optional[bool] = None
+    metadata.automation_id: Optional[str] = None
+    object_id: Optional[UUID] = None
+    parent_id: Optional[UUID] = None
+    query: Optional[str] = None
+    status: Optional[List[Literal['READY', 'STARTED', 'FINISHED',
+                                  'FINISHED_WITH_WARNING', 'FAILED', 'WAITING',
+                                  'ABORT_PENDING', 'ABORTED', 'SKIPPED',
+                                  'PAUSED']]] = Field(default_factory=list)
+    type: Optional[List[Literal['MEDIAINFO', 'TRANSCODE', 'KEYFRAMES', 'EXPORT',
+                                'DELETE', 'REINDEX', 'MOVE', 'TRANSFER',
+                                'ANALYZE', 'METADATA', 'CUSTOM', 'SCAN',
+                                'ARCHIVE', 'RESTORE', 'RESTORE_FROM_GLACIER',
+                                'ACL', 'COPY', 'TRANSCRIPTION',
+                                'REQUEST_COLLECTION_MAP',
+                                'COLLECTION_CUSTOM_ORDER',
+                                'STORAGE_GATEWAY_FILE_INGEST', 'MARK_MISSING',
+                                'FACE_RECOGNITION', 'SET_APPROVAL',
+                                'REQUEST_APPROVAL', 'CHANGE_PERSON',
+                                'CONFIRM_PERSON', 'DELETE_PERSON', 'AUTOMATION',
+                                'REVIEW_REQUEST',
+                                'CONVERT_SAVED_SEARCH_TO_COLLECTION',
+                                'DELETE_JOBS', 'EDIT_JOBS']]
+                   ] = Field(default_factory=list)
+
+
 class JobsBulkDeleteSchema(BaseModel):
     """Represents a JobsBulkDeleteSchema in the Iconik system."""
-    job_ids: List[UUID]
+    job_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class JobsBulkDeleteParamsSchema(BaseModel):
+    """Represents a JobsBulkDeleteParamsSchema in the Iconik system."""
+    _exists_: Optional[List[str]] = Field(default_factory=list)
+    _missing_: Optional[List[str]] = Field(default_factory=list)
+    created_by: Optional[List[UUID]] = Field(default_factory=list)
+    date_created: Optional[str] = None
+    date_modified: Optional[str] = None
+    ids: Optional[List[UUID]] = Field(default_factory=list)
+    metadata.automation_id: Optional[str] = None
+    object_id: Optional[UUID] = None
+    parent_id: Optional[UUID] = None
+    query: Optional[str] = None
+    status: Optional[List[Literal['FINISHED', 'FINISHED_WITH_WARNING',
+                                  'SKIPPED', 'FAILED',
+                                  'ABORTED']]] = Field(default_factory=list)
+    type: Optional[List[Literal['MEDIAINFO', 'TRANSCODE', 'KEYFRAMES', 'EXPORT',
+                                'DELETE', 'REINDEX', 'MOVE', 'TRANSFER',
+                                'ANALYZE', 'METADATA', 'CUSTOM', 'SCAN',
+                                'ARCHIVE', 'RESTORE', 'RESTORE_FROM_GLACIER',
+                                'ACL', 'COPY', 'TRANSCRIPTION',
+                                'REQUEST_COLLECTION_MAP',
+                                'COLLECTION_CUSTOM_ORDER',
+                                'STORAGE_GATEWAY_FILE_INGEST', 'MARK_MISSING',
+                                'FACE_RECOGNITION', 'SET_APPROVAL',
+                                'REQUEST_APPROVAL', 'CHANGE_PERSON',
+                                'CONFIRM_PERSON', 'DELETE_PERSON', 'AUTOMATION',
+                                'REVIEW_REQUEST',
+                                'CONVERT_SAVED_SEARCH_TO_COLLECTION',
+                                'DELETE_JOBS', 'EDIT_JOBS']]
+                   ] = Field(default_factory=list)
 
 
 class JobsBulkActionSchema(BaseModel):
@@ -196,7 +303,8 @@ class JobSchema(BaseModel):
                   'FACE_RECOGNITION', 'SET_APPROVAL', 'REQUEST_APPROVAL',
                   'CHANGE_PERSON', 'CONFIRM_PERSON', 'DELETE_PERSON',
                   'AUTOMATION', 'REVIEW_REQUEST',
-                  'CONVERT_SAVED_SEARCH_TO_COLLECTION']
+                  'CONVERT_SAVED_SEARCH_TO_COLLECTION', 'DELETE_JOBS',
+                  'EDIT_JOBS']
 
 
 class JobElasticSchema(BaseModel):
@@ -244,7 +352,8 @@ class JobElasticSchema(BaseModel):
                   'FACE_RECOGNITION', 'SET_APPROVAL', 'REQUEST_APPROVAL',
                   'CHANGE_PERSON', 'CONFIRM_PERSON', 'DELETE_PERSON',
                   'AUTOMATION', 'REVIEW_REQUEST',
-                  'CONVERT_SAVED_SEARCH_TO_COLLECTION']
+                  'CONVERT_SAVED_SEARCH_TO_COLLECTION', 'DELETE_JOBS',
+                  'EDIT_JOBS']
 
 
 class JobStepElastic(BaseModel):
@@ -301,7 +410,8 @@ class JobCreateSchema(BaseModel):
                   'FACE_RECOGNITION', 'SET_APPROVAL', 'REQUEST_APPROVAL',
                   'CHANGE_PERSON', 'CONFIRM_PERSON', 'DELETE_PERSON',
                   'AUTOMATION', 'REVIEW_REQUEST',
-                  'CONVERT_SAVED_SEARCH_TO_COLLECTION']
+                  'CONVERT_SAVED_SEARCH_TO_COLLECTION', 'DELETE_JOBS',
+                  'EDIT_JOBS']
 
 
 class JobStep(BaseModel):
@@ -356,7 +466,8 @@ class JobBaseSchema(BaseModel):
                   'FACE_RECOGNITION', 'SET_APPROVAL', 'REQUEST_APPROVAL',
                   'CHANGE_PERSON', 'CONFIRM_PERSON', 'DELETE_PERSON',
                   'AUTOMATION', 'REVIEW_REQUEST',
-                  'CONVERT_SAVED_SEARCH_TO_COLLECTION']
+                  'CONVERT_SAVED_SEARCH_TO_COLLECTION', 'DELETE_JOBS',
+                  'EDIT_JOBS']
 
 
 class RelatedObject(BaseModel):
@@ -379,13 +490,18 @@ class JobChildProgressSchema(BaseModel):
                              'PAUSED']] = None
 
 
+class BulkJobCreatedSchema(BaseModel):
+    """Represents a BulkJobCreatedSchema in the Iconik system."""
+    job_id: Optional[UUID] = None
+
+
 class BaseQueryParamsSchema(BaseModel):
     """Represents a BaseQueryParamsSchema in the Iconik system."""
     page: Optional[int] = Field(
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -422,7 +538,11 @@ JobsStateSchema.model_rebuild()
 JobsSchema.model_rebuild()
 JobsQueryParamsSchema.model_rebuild()
 JobsPrioritySchema.model_rebuild()
+JobsBulkParamsSchema.model_rebuild()
+JobsBulkEditSchema.model_rebuild()
+JobsBulkEditParamsSchema.model_rebuild()
 JobsBulkDeleteSchema.model_rebuild()
+JobsBulkDeleteParamsSchema.model_rebuild()
 JobsBulkActionSchema.model_rebuild()
 JobStepsUpdateSchema.model_rebuild()
 JobStepsSchema.model_rebuild()
@@ -438,6 +558,7 @@ JobStep.model_rebuild()
 JobBaseSchema.model_rebuild()
 RelatedObject.model_rebuild()
 JobChildProgressSchema.model_rebuild()
+BulkJobCreatedSchema.model_rebuild()
 BaseQueryParamsSchema.model_rebuild()
 ActionContextValueSchema.model_rebuild()
 ActionContextSchema.model_rebuild()

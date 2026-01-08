@@ -16,7 +16,7 @@ from . import (
     users_notifications,
 )
 # Package version (YYYY.M format)
-__version__ = "2025.5"
+__version__ = "2026.1"
 """
 This project uses calendar-based versioning in the format
 `YYYY.M[.P][-modifier.N]` where:

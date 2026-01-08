@@ -67,6 +67,7 @@ class UserSettingSchema(BaseModel):
     search_in_transcriptions: Optional[bool] = None
     search_results_asset_metadata_view_id: Optional[UUID] = None
     search_results_collection_metadata_view_id: Optional[UUID] = None
+    search_view_id: Optional[UUID] = None
     share_expiration_time: Optional[int] = Field(
         None,
         ge=0,
@@ -99,6 +100,7 @@ class SystemSettingSchema(BaseModel):
         description=
         "Allow playing the original file while transcoding is in progress."
     )
+    allow_share_magic_link_creation: Optional[bool] = None
     allowed_ips: Optional[List['AllowedIPSchema']] = Field(default_factory=list)
     append_asset_uuid_to_downloads: Optional[bool] = None
     asset_default_sections: Optional[List[str]] = Field(default_factory=list)
@@ -107,8 +109,26 @@ class SystemSettingSchema(BaseModel):
     cors_hosts: Optional[List[str]] = Field(default_factory=list)
     date_format: Optional[str] = None
     datetime_format: Optional[str] = None
+    default_app_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for app tokens in seconds."
+    )
+    default_refresh_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=15811200,
+        description="Default time to live for refresh tokens in seconds."
+    )
     default_share_options: Optional[Any] = None
     default_upload_storage_id: Optional[UUID] = None
+    default_user_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for user tokens in seconds."
+    )
     delete_grace_period: Optional[int] = Field(
         None,
         ge=0,
@@ -116,6 +136,7 @@ class SystemSettingSchema(BaseModel):
         description=
         "Grace period that indicate how long objects will live in recycle bin. Unit: hours"
     )
+    enable_face_recognition: Optional[bool] = None
     enable_shield: Optional[bool] = None
     external_share: Optional[bool] = None
     facet_fields: Optional[List['FacetFieldSchema']
@@ -148,7 +169,10 @@ class SystemSettingSchema(BaseModel):
                           ] = Field(default_factory=list)
     mfa_required: Optional[bool] = None
     password_checks: Optional[Any] = None
+    require_limit_download_groups: Optional[bool] = None
     required_metadata_views: Optional[List[str]] = Field(default_factory=list)
+    review_experience_disabled: Optional[bool] = None
+    review_experience_disabled_per_share: Optional[bool] = None
     safe_searches_metadata_field: Optional[str] = None
     saml_require_groups: Optional[bool] = None
     search_auto_resize_title_column: Optional[bool] = None
@@ -184,6 +208,7 @@ class SystemSettingPublicSchema(BaseModel):
         description=
         "Allow playing the original file while transcoding is in progress."
     )
+    allow_share_magic_link_creation: Optional[bool] = None
     allowed_ips: Optional[List['AllowedIPSchema']] = Field(default_factory=list)
     append_asset_uuid_to_downloads: Optional[bool] = None
     asset_default_sections: Optional[List[str]] = Field(default_factory=list)
@@ -193,8 +218,26 @@ class SystemSettingPublicSchema(BaseModel):
     custom_terms: Optional[bool] = None
     date_format: Optional[str] = None
     datetime_format: Optional[str] = None
+    default_app_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for app tokens in seconds."
+    )
+    default_refresh_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=15811200,
+        description="Default time to live for refresh tokens in seconds."
+    )
     default_share_options: Optional[Any] = None
     default_upload_storage_id: Optional[UUID] = None
+    default_user_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for user tokens in seconds."
+    )
     delete_grace_period: Optional[int] = Field(
         None,
         ge=0,
@@ -204,6 +247,7 @@ class SystemSettingPublicSchema(BaseModel):
     )
     disable_billing_page: Optional[bool] = None
     domain_has_preloaded_assets: Optional[bool] = None
+    enable_face_recognition: Optional[bool] = None
     enable_shield: Optional[bool] = None
     external_share: Optional[bool] = None
     facet_fields: Optional[List['FacetFieldSchema']
@@ -238,7 +282,10 @@ class SystemSettingPublicSchema(BaseModel):
                           ] = Field(default_factory=list)
     mfa_required: Optional[bool] = None
     password_checks: Optional[Any] = None
+    require_limit_download_groups: Optional[bool] = None
     required_metadata_views: Optional[List[str]] = Field(default_factory=list)
+    review_experience_disabled: Optional[bool] = None
+    review_experience_disabled_per_share: Optional[bool] = None
     safe_searches_metadata_field: Optional[str] = None
     saml_require_groups: Optional[bool] = None
     search_auto_resize_title_column: Optional[bool] = None
@@ -249,6 +296,7 @@ class SystemSettingPublicSchema(BaseModel):
     search_results_asset_metadata_view_id: Optional[UUID] = None
     search_results_collection_metadata_view_id: Optional[UUID] = None
     search_users_from_share: Optional[bool] = None
+    search_view_id: Optional[UUID] = None
     share_expiration_time: Optional[int] = Field(
         None,
         ge=0,
@@ -305,6 +353,7 @@ class MergedSettingsSchema(BaseModel):
         description=
         "Allow playing the original file while transcoding is in progress."
     )
+    allow_share_magic_link_creation: Optional[bool] = None
     allowed_ips: Optional[List['AllowedIPSchema']] = Field(default_factory=list)
     append_asset_uuid_to_downloads: Optional[bool] = None
     asset_default_sections: Optional[List[str]] = Field(default_factory=list)
@@ -314,8 +363,26 @@ class MergedSettingsSchema(BaseModel):
     custom_terms: Optional[bool] = None
     date_format: Optional[str] = None
     datetime_format: Optional[str] = None
+    default_app_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for app tokens in seconds."
+    )
+    default_refresh_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=15811200,
+        description="Default time to live for refresh tokens in seconds."
+    )
     default_share_options: Optional[Any] = None
     default_upload_storage_id: Optional[UUID] = None
+    default_user_token_ttl: Optional[int] = Field(
+        None,
+        ge=0,
+        le=315360000,
+        description="Default time to live for user tokens in seconds."
+    )
     delete_grace_period: Optional[int] = Field(
         None,
         ge=0,
@@ -325,6 +392,7 @@ class MergedSettingsSchema(BaseModel):
     )
     disable_billing_page: Optional[bool] = None
     domain_has_preloaded_assets: Optional[bool] = None
+    enable_face_recognition: Optional[bool] = None
     enable_shield: Optional[bool] = None
     external_share: Optional[bool] = None
     facet_fields: Optional[List['FacetFieldSchema']
@@ -361,7 +429,10 @@ class MergedSettingsSchema(BaseModel):
                           ] = Field(default_factory=list)
     mfa_required: Optional[bool] = None
     password_checks: Optional[Any] = None
+    require_limit_download_groups: Optional[bool] = None
     required_metadata_views: Optional[List[str]] = Field(default_factory=list)
+    review_experience_disabled: Optional[bool] = None
+    review_experience_disabled_per_share: Optional[bool] = None
     safe_searches_metadata_field: Optional[str] = None
     saml_require_groups: Optional[bool] = None
     search_auto_resize_title_column: Optional[bool] = None
@@ -372,6 +443,7 @@ class MergedSettingsSchema(BaseModel):
     search_results_asset_metadata_view_id: Optional[UUID] = None
     search_results_collection_metadata_view_id: Optional[UUID] = None
     search_users_from_share: Optional[bool] = None
+    search_view_id: Optional[UUID] = None
     share_expiration_time: Optional[int] = Field(
         None,
         ge=0,
@@ -388,11 +460,6 @@ class MergedSettingsSchema(BaseModel):
     update_saml_primary_group_on_login: Optional[bool] = None
     use_asset_name_on_download: Optional[bool] = None
     watermark_options: Optional[Any] = None
-
-
-class KubernetesSettingSchema(BaseModel):
-    """Represents a KubernetesSettingSchema in the Iconik system."""
-    settings: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
 class JobsWidgetOptionSchema(BaseModel):
@@ -449,6 +516,11 @@ class Sort(BaseModel):
     order: Optional[Literal['asc', 'desc']] = None
 
 
+class GroupSettingsIDSchema(BaseModel):
+    """Represents a GroupSettingsIDSchema in the Iconik system."""
+    object_ids: List[UUID]
+
+
 class GroupSettingSchema(BaseModel):
     """Represents a GroupSettingSchema in the Iconik system."""
     group_id: Optional[UUID] = None
@@ -492,6 +564,7 @@ class GroupSettingPublicSchema(BaseModel):
     search_in_transcriptions: Optional[bool] = None
     search_results_asset_metadata_view_id: Optional[UUID] = None
     search_results_collection_metadata_view_id: Optional[UUID] = None
+    search_view_id: Optional[UUID] = None
     share_expiration_time: Optional[int] = Field(
         None,
         ge=0,
@@ -576,7 +649,6 @@ SearchDisplayFieldSchema.model_rebuild()
 PasswordChecksTypeSchema.model_rebuild()
 PasswordChecksType.model_rebuild()
 MergedSettingsSchema.model_rebuild()
-KubernetesSettingSchema.model_rebuild()
 JobsWidgetOptionSchema.model_rebuild()
 JobsWidgetOptionFilterSchema.model_rebuild()
 JobsDashboardWidgetSchema.model_rebuild()
@@ -585,6 +657,7 @@ JobsDashboard.model_rebuild()
 JobsDashboardWidget.model_rebuild()
 JobsWidgetOption.model_rebuild()
 Sort.model_rebuild()
+GroupSettingsIDSchema.model_rebuild()
 GroupSettingSchema.model_rebuild()
 GroupSettingPublicSchema.model_rebuild()
 SearchDisplayField.model_rebuild()

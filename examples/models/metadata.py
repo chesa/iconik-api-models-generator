@@ -69,6 +69,32 @@ class MetadataViewFieldSchema(BaseModel):
     )
 
 
+class MetadataViewCreateSchema(BaseModel):
+    """Represents a MetadataViewCreateSchema in the Iconik system."""
+    description: Optional[str] = None
+    id: Optional[UUID] = None
+    name: str
+    view_fields: List['MetadataViewField']
+    write_access_for_everyone: Optional[bool] = None
+
+
+class MetadataViewField(BaseModel):
+    """Represents a MetadataViewField in the Iconik system."""
+    auto_set: Optional[bool] = None
+    hide_if_not_set: Optional[bool] = None
+    label: Optional[str] = None
+    mapped_field_name: Optional[str] = None
+    name: str
+    options: Optional[List['FieldOptionsSchema']] = Field(default_factory=list)
+    read_only: Optional[bool] = None
+    required: Optional[bool] = None
+    source_url: Optional[HttpUrl] = Field(
+        None,
+        description=
+        "Will be used to upload MetadataField's `options`. Cannot be set or used as long as `options` are set.  **Example**: The value is `https://external-url.com/foo/`. In that case `GET` request will be sent to `https://external-url.com/foo/?user_id=uuid1&view_id=uuid1&field_name=bar&view_name=user_view&system_domain_id=uuid1`. Please note that some query parameters were added by *iconik* to get values that were predefined in your system for each user [user_id] and view [view_id]. Metadata field name [field_name], view's name [view_name] and system domain identifier [system_domain_id] will be also passed in each request. *iconik* will successfully parse the response from that URL if it will be sent in JSON formatted string: `{\"bar\": [{\"value\": \"1\", \"label\": \"1st\"}, {\"value\": \"2\", \"label\": \"2nd\"}]}`"
+    )
+
+
 class MetadataValuesSchema(BaseModel):
     """Represents a MetadataValuesSchema in the Iconik system."""
     date_created: Optional[datetime] = None
@@ -324,6 +350,13 @@ class CollectionMetadataValuesBatchSchema(BaseModel):
     object_type: Optional[str] = None
 
 
+class MetadataFieldValueSchema(BaseModel):
+    """Represents a MetadataFieldValueSchema in the Iconik system."""
+    date_created: Optional[datetime] = None
+    field_values: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    mode: Optional[Literal['append', 'delete', 'overwrite']] = None
+
+
 class MetadataField(BaseModel):
     """Represents a MetadataField in the Iconik system."""
     auto_set: Optional[bool] = None
@@ -360,13 +393,6 @@ class FieldOptionsSchema(BaseModel):
     value: Optional[str] = None
 
 
-class MetadataFieldValueSchema(BaseModel):
-    """Represents a MetadataFieldValueSchema in the Iconik system."""
-    date_created: Optional[datetime] = None
-    field_values: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
-    mode: Optional[Literal['append', 'delete', 'overwrite']] = None
-
-
 class BulkMetadataDeleteSchema(BaseModel):
     """Represents a BulkMetadataDeleteSchema in the Iconik system."""
     object_ids: List[UUID]
@@ -392,6 +418,8 @@ MetadataViewSchema.model_rebuild()
 MetadataViewInputSchema.model_rebuild()
 MetadataViewForListSchema.model_rebuild()
 MetadataViewFieldSchema.model_rebuild()
+MetadataViewCreateSchema.model_rebuild()
+MetadataViewField.model_rebuild()
 MetadataValuesSchema.model_rebuild()
 MetadataValuesObjectIdSchema.model_rebuild()
 MetadataValuesBatchSchema.model_rebuild()
@@ -415,9 +443,9 @@ CreateMetadataValuesBatchSchema.model_rebuild()
 MetadataValuesObjectId.model_rebuild()
 CopySourceQueryParamsSchema.model_rebuild()
 CollectionMetadataValuesBatchSchema.model_rebuild()
+MetadataFieldValueSchema.model_rebuild()
 MetadataField.model_rebuild()
 FieldOptionsSchema.model_rebuild()
-MetadataFieldValueSchema.model_rebuild()
 BulkMetadataDeleteSchema.model_rebuild()
 BulkMetadataCopySchema.model_rebuild()
 SegmentsCopyMapping.model_rebuild()

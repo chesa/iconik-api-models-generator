@@ -149,7 +149,9 @@ class TranscoderUsagesElasticSchema(BaseModel):
                                      'TRANSCODE_KEYFRAMES', 'MEDIAINFO',
                                      'CONFORM', 'EXTRACT_AUDIO',
                                      'EXTRACT_IMAGE', 'ANALYZE', 'TRANSCRIBE',
-                                     'TRANSCRIBE_HUMAN']] = None
+                                     'TRANSCRIBE_HUMAN',
+                                     'FACE_RECOGNITION_IMAGE',
+                                     'FACE_RECOGNITION_VIDEO']] = None
     source_bytes: Optional[int] = Field(
         None, ge=-9223372036854775808, le=9223372036854775807
     )
@@ -163,7 +165,8 @@ class TranscoderUsagesElasticSchema(BaseModel):
                              'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER',
                              'MEDIAINFO', 'ICONIK_EDGE_TRANSCODER', 'NONE',
                              'REV_AI_TRANSCRIPTION', 'GCVI_TRANSCRIPTION',
-                             'AMAZON_TRANSCRIBE', 'OPEN_GRAPH']
+                             'AMAZON_TRANSCRIBE', 'OPEN_GRAPH', 'LIBREOFFICE',
+                             'FACE_RECOGNITION', 'FLICS', 'WILDMOKA']
 
 
 class TranscoderUsageSchema(BaseModel):
@@ -188,7 +191,9 @@ class TranscoderUsageSchema(BaseModel):
                                      'TRANSCODE_KEYFRAMES', 'MEDIAINFO',
                                      'CONFORM', 'EXTRACT_AUDIO',
                                      'EXTRACT_IMAGE', 'ANALYZE', 'TRANSCRIBE',
-                                     'TRANSCRIBE_HUMAN']] = None
+                                     'TRANSCRIBE_HUMAN',
+                                     'FACE_RECOGNITION_IMAGE',
+                                     'FACE_RECOGNITION_VIDEO']] = None
     percent_done: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     source_bytes: Optional[int] = Field(
         None, ge=-9223372036854775808, le=9223372036854775807
@@ -206,7 +211,8 @@ class TranscoderUsageSchema(BaseModel):
                              'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER',
                              'MEDIAINFO', 'ICONIK_EDGE_TRANSCODER', 'NONE',
                              'REV_AI_TRANSCRIPTION', 'GCVI_TRANSCRIPTION',
-                             'AMAZON_TRANSCRIBE', 'OPEN_GRAPH']
+                             'AMAZON_TRANSCRIBE', 'OPEN_GRAPH', 'LIBREOFFICE',
+                             'FACE_RECOGNITION', 'FLICS', 'WILDMOKA']
 
 
 class StorageUsagesSchema(BaseModel):
@@ -358,11 +364,13 @@ class CurrentUsageSchema(BaseModel):
     automation_runs: Optional[int] = None
     edge_transcoders: Optional[int] = None
     images_analyzed: Optional[int] = None
+    images_face_recognition: Optional[int] = None
     shield_enabled: Optional[bool] = None
     storage: Optional[Dict[str, Any]] = Field(default_factory=dict)
     transcription_hours: Optional[float] = None
     users: Optional[Dict[str, Any]] = Field(default_factory=dict)
     video_analyzed_hours: Optional[float] = None
+    video_face_recognition_hours: Optional[float] = None
 
 
 class CreditsSchema(BaseModel):

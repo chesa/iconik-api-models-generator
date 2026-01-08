@@ -166,6 +166,7 @@ class SystemDomainSuperAdminSchema(BaseModel):
     base_url: str
     billing_limits: Optional[Any] = None
     billing_tier: Optional[Literal['PAYGO', 'PRO', 'ENTERPRISE']] = None
+    contract_end_date: Optional[datetime] = None
     country: Optional[str] = None
     creating_user_id: Optional[UUID] = None
     custom_terms: Optional[bool] = None
@@ -174,6 +175,7 @@ class SystemDomainSuperAdminSchema(BaseModel):
     deactivate_date: Optional[datetime] = None
     description: Optional[str] = None
     disable_billing_page: Optional[bool] = None
+    disable_cc_purchase: Optional[bool] = None
     discount_percent: Optional[float] = None
     do_not_charge_edge_transcoder: Optional[bool] = None
     do_not_charge_remote_proxies: Optional[bool] = None
@@ -182,6 +184,19 @@ class SystemDomainSuperAdminSchema(BaseModel):
     freeze_date: Optional[datetime] = None
     has_preloaded_assets: Optional[bool] = None
     id: Optional[UUID] = None
+    industry: Optional[Literal['ADVERTISING_MARKETING_CREATIVE', 'AUTOMOTIVE',
+                               'BROADCASTER_NETWORKS',
+                               'CONSTRUCTION_MANUFACTURING', 'EDUCATION',
+                               'ENERGY_UTILITIES', 'FAITH_RELIGIOUS_ORGS',
+                               'FINANCE', 'GAME_STUDIOS_PUBLISHERS',
+                               'GOVERNMENT_PUBLIC_SECTOR', 'HEALTHCARE',
+                               'HOSPITALITY_FITNESS_WELLNESS',
+                               'LIVE_PRODUCTION_EVENTS', 'MEDIA_CONGLOMERATES',
+                               'NONPROFITS_NON_RELIGIOUS', 'ONLINE_MEDIA',
+                               'PUBLISHERS_NEWSPAPERS', 'TELECOMMUNICATIONS',
+                               'RETAIL_CONSUMER_GOODS', 'SOFTWARE_TECHNOLOGY',
+                               'SPORTS_RIGHTS_LEAGUES',
+                               'STUDIOS_CONTENT_PRODUCERS', 'OTHER']] = None
     invoice_end_of_month: Optional[bool] = None
     is_plg: Optional[bool] = None
     is_template: Optional[bool] = None
@@ -205,6 +220,7 @@ class SystemDomainSchema(BaseModel):
     base_url: str
     billing_limits: Optional[Any] = None
     billing_tier: Optional[Literal['PAYGO', 'PRO', 'ENTERPRISE']] = None
+    contract_end_date: Optional[datetime] = None
     country: Optional[str] = None
     creating_user_id: Optional[UUID] = None
     custom_terms: Optional[bool] = None
@@ -213,6 +229,7 @@ class SystemDomainSchema(BaseModel):
     deactivate_date: Optional[datetime] = None
     description: Optional[str] = None
     disable_billing_page: Optional[bool] = None
+    disable_cc_purchase: Optional[bool] = None
     discount_percent: Optional[float] = None
     do_not_charge_edge_transcoder: Optional[bool] = None
     do_not_charge_remote_proxies: Optional[bool] = None
@@ -221,6 +238,19 @@ class SystemDomainSchema(BaseModel):
     freeze_date: Optional[datetime] = None
     has_preloaded_assets: Optional[bool] = None
     id: Optional[UUID] = None
+    industry: Optional[Literal['ADVERTISING_MARKETING_CREATIVE', 'AUTOMOTIVE',
+                               'BROADCASTER_NETWORKS',
+                               'CONSTRUCTION_MANUFACTURING', 'EDUCATION',
+                               'ENERGY_UTILITIES', 'FAITH_RELIGIOUS_ORGS',
+                               'FINANCE', 'GAME_STUDIOS_PUBLISHERS',
+                               'GOVERNMENT_PUBLIC_SECTOR', 'HEALTHCARE',
+                               'HOSPITALITY_FITNESS_WELLNESS',
+                               'LIVE_PRODUCTION_EVENTS', 'MEDIA_CONGLOMERATES',
+                               'NONPROFITS_NON_RELIGIOUS', 'ONLINE_MEDIA',
+                               'PUBLISHERS_NEWSPAPERS', 'TELECOMMUNICATIONS',
+                               'RETAIL_CONSUMER_GOODS', 'SOFTWARE_TECHNOLOGY',
+                               'SPORTS_RIGHTS_LEAGUES',
+                               'STUDIOS_CONTENT_PRODUCERS', 'OTHER']] = None
     invoice_end_of_month: Optional[bool] = None
     is_plg: Optional[bool] = None
     is_template: Optional[bool] = None
@@ -230,6 +260,7 @@ class SystemDomainSchema(BaseModel):
     ordway_customer_id: Optional[str] = None
     ordway_subscription_id: Optional[str] = None
     price_list: Optional[str] = None
+    primary_region: Optional[str] = None
     referral_code: Optional[str] = None
     sales_force_id: Optional[str] = None
     status: Optional[Literal['ACTIVE', 'WARNING', 'FROZEN',
@@ -237,6 +268,23 @@ class SystemDomainSchema(BaseModel):
     stripe_id: Optional[str] = None
     type: Optional[Literal['TRIAL', 'CUSTOMER', 'PARTNER', 'INTERNAL']] = None
     warning_message: Optional[str] = None
+
+
+class SystemDomainProfileSchema(BaseModel):
+    """Represents a SystemDomainProfileSchema in the Iconik system."""
+    industry: Optional[Literal['ADVERTISING_MARKETING_CREATIVE', 'AUTOMOTIVE',
+                               'BROADCASTER_NETWORKS',
+                               'CONSTRUCTION_MANUFACTURING', 'EDUCATION',
+                               'ENERGY_UTILITIES', 'FAITH_RELIGIOUS_ORGS',
+                               'FINANCE', 'GAME_STUDIOS_PUBLISHERS',
+                               'GOVERNMENT_PUBLIC_SECTOR', 'HEALTHCARE',
+                               'HOSPITALITY_FITNESS_WELLNESS',
+                               'LIVE_PRODUCTION_EVENTS', 'MEDIA_CONGLOMERATES',
+                               'NONPROFITS_NON_RELIGIOUS', 'ONLINE_MEDIA',
+                               'PUBLISHERS_NEWSPAPERS', 'TELECOMMUNICATIONS',
+                               'RETAIL_CONSUMER_GOODS', 'SOFTWARE_TECHNOLOGY',
+                               'SPORTS_RIGHTS_LEAGUES',
+                               'STUDIOS_CONTENT_PRODUCERS', 'OTHER']] = None
 
 
 class SystemDomainFromTemplateSchema(BaseModel):
@@ -272,6 +320,10 @@ class SystemDomainFromReferralCodeSchema(BaseModel):
     description: Optional[str] = None
     id: Optional[UUID] = None
     name: str
+
+
+class SystemDomainBaseSchema(BaseModel):
+    """Represents a SystemDomainBaseSchema in the Iconik system."""
 
 
 class SimpleLoginSchema(BaseModel):
@@ -319,9 +371,11 @@ class ReferralCodesSchema(BaseModel):
 
 class ReferralCodeSchema(BaseModel):
     """Represents a ReferralCodeSchema in the Iconik system."""
+    billing_tier: Optional[Literal['PAYGO', 'PRO', 'ENTERPRISE']] = None
     code: str
     credit_expiry_days: Optional[int] = None
     do_not_delete: Optional[bool] = None
+    freeze_date: Optional[datetime] = None
     is_plg: Optional[bool] = None
     manage_system_domain_id: Optional[UUID] = None
     ordway_customer_id: Optional[str] = None
@@ -688,6 +742,8 @@ class Country(BaseModel):
 class CompleteInvitationSchema(BaseModel):
     """Represents a CompleteInvitationSchema in the Iconik system."""
     email_marketing_consent: Optional[bool] = None
+    first_name: str
+    last_name: Optional[str] = None
     password: str
     repeat_password: str
 
@@ -699,6 +755,8 @@ class BillingLimitsSchema(BaseModel):
     browse_users: Optional[int] = None
     edge_transcoders: Optional[int] = None
     egress_gb: Optional[int] = None
+    face_recognition_hours: Optional[int] = None
+    face_recognition_images: Optional[int] = None
     image_recognition: Optional[int] = None
     multiregion_storage_gb: Optional[int] = None
     power_users: Optional[int] = None
@@ -706,6 +764,7 @@ class BillingLimitsSchema(BaseModel):
     regional_storage_gb: Optional[int] = None
     shield_enabled: Optional[bool] = None
     standard_users: Optional[int] = None
+    sync_session_max_clients: Optional[int] = None
     transcription_hours: Optional[int] = None
 
 
@@ -788,8 +847,10 @@ TemporaryPasswordTokenSchema.model_rebuild()
 SystemDomainsSchema.model_rebuild()
 SystemDomainSuperAdminSchema.model_rebuild()
 SystemDomainSchema.model_rebuild()
+SystemDomainProfileSchema.model_rebuild()
 SystemDomainFromTemplateSchema.model_rebuild()
 SystemDomainFromReferralCodeSchema.model_rebuild()
+SystemDomainBaseSchema.model_rebuild()
 SimpleLoginSchema.model_rebuild()
 SAMLLoginSchema.model_rebuild()
 ResetPasswordSchema.model_rebuild()

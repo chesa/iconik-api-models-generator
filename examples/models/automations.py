@@ -27,6 +27,24 @@ class _ActionSchemaBase(BaseModel):
     parameters: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
+class VersionOnlineTriggerSchema(BaseModel):
+    """Represents a VersionOnlineTriggerSchema in the Iconik system."""
+    parameters: 'VersionOnlineTriggerParameters'
+    type: Literal['VERSION_ONLINE']
+
+
+class VersionOnlineTrigger(BaseModel):
+    """Represents a VersionOnlineTrigger in the Iconik system."""
+    parameters: 'VersionOnlineTriggerParameters'
+    type: Literal['VERSION_ONLINE']
+
+
+class VersionOnlineTriggerParameters(BaseModel):
+    """Represents a VersionOnlineTriggerParameters in the Iconik system."""
+    only_first_version: Literal[False]
+    wait_for_transcode: bool
+
+
 class UpdateACLActionSchema(BaseModel):
     """Represents a UpdateACLActionSchema in the Iconik system."""
     parameters: 'UpdateACLActionParameters'
@@ -82,7 +100,7 @@ class TriggerCustomAction(BaseModel):
 class TriggerCustomActionParameters(BaseModel):
     """Represents a TriggerCustomActionParameters in the Iconik system."""
     action_id: UUID
-    context: Literal['ASSET', 'COLLECTION']
+    context: Literal['ASSET', 'ASSET_SUBCLIP', 'BULK']
     metadata_values: Optional[Dict[str, 'MetadataFieldValueSchema']
                               ] = Field(default_factory=dict)
 
@@ -99,6 +117,7 @@ class TransferActionParametersSchema(BaseModel):
     destination_directory_path: Optional[str] = None
     destination_storage_id: UUID
     format_name: str
+    preferred_original_storage_id: Optional[UUID] = None
 
 
 class TranscribeActionSchema(BaseModel):
@@ -161,6 +180,7 @@ class TranscodeActionParameters(BaseModel):
 class TermSchema(BaseModel):
     """Represents a TermSchema in the Iconik system."""
     exists: Optional[bool] = None
+    external: Optional[Dict[str, Any]] = Field(default_factory=dict)
     missing: Optional[bool] = None
     name: str
     range: Optional['RangeFilterSchema'] = None
@@ -295,6 +315,7 @@ class TransferActionParameters(BaseModel):
     destination_directory_path: Optional[str] = None
     destination_storage_id: UUID
     format_name: str
+    preferred_original_storage_id: Optional[UUID] = None
 
 
 class RemoveAssetRestrictionActionSchema(BaseModel):
@@ -438,6 +459,25 @@ class ListObjectsSchema(BaseModel):
     )
 
 
+class ExtractFacesActionSchema(BaseModel):
+    """Represents a ExtractFacesActionSchema in the Iconik system."""
+    parameters: 'ExtractFacesParameters'
+    type: Literal['EXTRACT_FACES']
+
+
+class ExtractFacesAction(BaseModel):
+    """Represents a ExtractFacesAction in the Iconik system."""
+    parameters: 'ExtractFacesParameters'
+    type: Literal['EXTRACT_FACES']
+
+
+class ExtractFacesParameters(BaseModel):
+    """Represents a ExtractFacesParameters in the Iconik system."""
+    face_image_analysis_profile_id: Optional[UUID] = None
+    face_video_analysis_profile_id: Optional[UUID] = None
+    force: Optional[bool] = None
+
+
 class ExportActionSchema(BaseModel):
     """Represents a ExportActionSchema in the Iconik system."""
     parameters: 'ExportActionParameters'
@@ -462,6 +502,24 @@ class ExportActionParameters(BaseModel):
     overwrite: Optional[bool] = None
     preferred_original_storage_id: Optional[UUID] = None
     transcode_profile_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class DeleteFileSetActionSchema(BaseModel):
+    """Represents a DeleteFileSetActionSchema in the Iconik system."""
+    parameters: 'DeleteFileSetActionParameters'
+    type: Literal['DELETE_FILE_SET']
+
+
+class DeleteFileSetAction(BaseModel):
+    """Represents a DeleteFileSetAction in the Iconik system."""
+    parameters: 'DeleteFileSetActionParameters'
+    type: Literal['DELETE_FILE_SET']
+
+
+class DeleteFileSetActionParameters(BaseModel):
+    """Represents a DeleteFileSetActionParameters in the Iconik system."""
+    format: str
+    storage_id: UUID
 
 
 class DeleteActionSchema(BaseModel):
@@ -684,6 +742,7 @@ class AssetTransferredToStorageTriggerSchema(BaseModel):
 
 class AssetTransferredToStorageParameters(BaseModel):
     """Represents a AssetTransferredToStorageParameters in the Iconik system."""
+    format: Optional[str] = None
     storage_id: UUID
 
 
@@ -717,7 +776,7 @@ class AssetOnlineTriggerSchema(BaseModel):
 
 class AssetOnlineTriggerParameters(BaseModel):
     """Represents a AssetOnlineTriggerParameters in the Iconik system."""
-    only_first_version: bool
+    only_first_version: Literal[True]
     wait_for_transcode: bool
 
 
@@ -756,6 +815,7 @@ class Condition(BaseModel):
 class Term(BaseModel):
     """Represents a Term in the Iconik system."""
     exists: Optional[bool] = None
+    external: Optional[Dict[str, Any]] = Field(default_factory=dict)
     missing: Optional[bool] = None
     name: str
     range: Optional['RangeFilter'] = None
@@ -831,6 +891,9 @@ class ACLUpdateSchema(BaseModel):
 _TriggerSchemaBase.model_rebuild()
 _ObjectCollectionTriggerParametersSchema.model_rebuild()
 _ActionSchemaBase.model_rebuild()
+VersionOnlineTriggerSchema.model_rebuild()
+VersionOnlineTrigger.model_rebuild()
+VersionOnlineTriggerParameters.model_rebuild()
 UpdateACLActionSchema.model_rebuild()
 UpdateACLAction.model_rebuild()
 UpdateACLActionParameters.model_rebuild()
@@ -889,9 +952,15 @@ MetadataUpdateActionParameters.model_rebuild()
 MetadataFieldValueUpdateSchema.model_rebuild()
 MetadataFieldValueSchema.model_rebuild()
 ListObjectsSchema.model_rebuild()
+ExtractFacesActionSchema.model_rebuild()
+ExtractFacesAction.model_rebuild()
+ExtractFacesParameters.model_rebuild()
 ExportActionSchema.model_rebuild()
 ExportAction.model_rebuild()
 ExportActionParameters.model_rebuild()
+DeleteFileSetActionSchema.model_rebuild()
+DeleteFileSetAction.model_rebuild()
+DeleteFileSetActionParameters.model_rebuild()
 DeleteActionSchema.model_rebuild()
 DeleteAction.model_rebuild()
 CreatedAtTransitionTriggerSchema.model_rebuild()

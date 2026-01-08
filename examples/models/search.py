@@ -10,6 +10,57 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class SearchViewsSchema(BaseModel):
+    """Represents a SearchViewsSchema in the Iconik system."""
+    objects: Optional[List['SearchViewSchema']] = Field(default_factory=list)
+
+
+class SearchViewsIDSchema(BaseModel):
+    """Represents a SearchViewsIDSchema in the Iconik system."""
+    object_ids: List[UUID]
+
+
+class SearchViewSchema(BaseModel):
+    """Represents a SearchViewSchema in the Iconik system."""
+    auto_resize_title_column: Optional[bool] = None
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    description: Optional[str] = None
+    id: Optional[UUID] = None
+    name: Optional[str] = None
+    view_fields: Optional[List['SearchViewFieldTypeSchema']
+                          ] = Field(default_factory=list)
+
+
+class SearchViewFieldTypeWidthSchema(BaseModel):
+    """Represents a SearchViewFieldTypeWidthSchema in the Iconik system."""
+    auto_resize: Optional[bool] = None
+    current: Optional[int] = None
+    fixed: Optional[int] = None
+    max: Optional[int] = None
+    min: Optional[int] = None
+
+
+class SearchViewFieldTypeSchema(BaseModel):
+    """Represents a SearchViewFieldTypeSchema in the Iconik system."""
+    facetable: Optional[bool] = None
+    label: Optional[str] = None
+    name: Optional[str] = None
+    origin_field_name: Optional[str] = None
+    sortable: Optional[bool] = None
+    type: Optional[str] = None
+    width: Optional['SearchViewFieldTypeWidth'] = None
+
+
+class SearchViewFieldTypeWidth(BaseModel):
+    """Represents a SearchViewFieldTypeWidth in the Iconik system."""
+    auto_resize: Optional[bool] = None
+    current: Optional[int] = None
+    fixed: Optional[int] = None
+    max: Optional[int] = None
+    min: Optional[int] = None
+
+
 class SearchSuggestsResponseSchema(BaseModel):
     """Represents a SearchSuggestsResponseSchema in the Iconik system."""
     objects: Optional[List['SearchSuggestResponseSchema']
@@ -125,6 +176,40 @@ class SearchCriteriaSchema(BaseModel):
     sort: Optional[List['CriteriaSortSchema']] = Field(default_factory=list)
 
 
+class SearchCriteriaSavedSchema(BaseModel):
+    """Represents a SearchCriteriaSavedSchema in the Iconik system."""
+    doc_types: Optional[List[Literal['assets', 'collections', 'segments',
+                                     'saved_searches', 'saved_search_groups']]
+                        ] = Field(default_factory=list)
+    exclude_fields: Optional[List[str]] = Field(default_factory=list)
+    facets: Optional[List[str]] = Field(default_factory=list)
+    facets_filters: Optional[List['FacetFilterSchema']
+                             ] = Field(default_factory=list)
+    filter: Optional['CriteriaFilterSchema'] = None
+    include_fields: Optional[List[str]] = Field(default_factory=list)
+    metadata_view_id: Optional[UUID] = None
+    query: Optional[str] = None
+    search_fields: Optional[List[str]] = Field(default_factory=list)
+    sort: Optional[List['CriteriaSortSchema']] = Field(default_factory=list)
+
+
+class SearchCriteriaBaseSchema(BaseModel):
+    """Represents a SearchCriteriaBaseSchema in the Iconik system."""
+    doc_types: Optional[List[Literal['assets', 'collections', 'segments',
+                                     'saved_searches', 'saved_search_groups']]
+                        ] = Field(default_factory=list)
+    exclude_fields: Optional[List[str]] = Field(default_factory=list)
+    facets: Optional[List[str]] = Field(default_factory=list)
+    facets_filters: Optional[List['FacetFilterSchema']
+                             ] = Field(default_factory=list)
+    filter: Optional['CriteriaFilterSchema'] = None
+    include_fields: Optional[List[str]] = Field(default_factory=list)
+    metadata_view_id: Optional[UUID] = None
+    query: Optional[str] = None
+    search_fields: Optional[List[str]] = Field(default_factory=list)
+    sort: Optional[List['CriteriaSortSchema']] = Field(default_factory=list)
+
+
 class SavedSearchesSchema(BaseModel):
     """Represents a SavedSearchesSchema in the Iconik system."""
     facets: Optional[Dict[str, Any]] = Field(default_factory=dict)
@@ -143,7 +228,7 @@ class SavedSearchesSchema(BaseModel):
 
 class SavedSearchSchema(BaseModel):
     """Represents a SavedSearchSchema in the Iconik system."""
-    criteria: 'SearchCriteria'
+    criteria: 'SearchCriteriaSaved'
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     group_id: Optional[UUID] = None
@@ -189,6 +274,9 @@ class SavedSearchQueryParamsSchema(BaseModel):
     per_page: Optional[int] = Field(
         None, ge=0, le=1000, description="The number of items for each page"
     )
+    scroll: Optional[bool] = None
+    scroll_id: Optional[UUID] = None
+    search_after: Optional[List[Any]] = Field(default_factory=list)
     sort: Optional[str] = Field(
         None,
         description="A comma separated list of fieldnames with order (asc/desc)"
@@ -216,6 +304,7 @@ class SavedSearchGroupSchema(BaseModel):
     date_modified: Optional[datetime] = None
     id: Optional[UUID] = None
     name: str
+    saved_searches_count: Optional[int] = None
     system_domain_id: Optional[UUID] = None
     user_id: Optional[UUID] = None
 
@@ -259,7 +348,7 @@ class SavedSearchConvertCollectionSchema(BaseModel):
 
 class SavedSearch(BaseModel):
     """Represents a SavedSearch in the Iconik system."""
-    criteria: 'SearchCriteria'
+    criteria: 'SearchCriteriaSaved'
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     group_id: Optional[UUID] = None
@@ -268,8 +357,8 @@ class SavedSearch(BaseModel):
     permissions: Optional[List[str]] = Field(default_factory=list)
 
 
-class SearchCriteria(BaseModel):
-    """Represents a SearchCriteria in the Iconik system."""
+class SearchCriteriaSaved(BaseModel):
+    """Represents a SearchCriteriaSaved in the Iconik system."""
     doc_types: Optional[List[Literal['assets', 'collections', 'segments',
                                      'saved_searches', 'saved_search_groups']]
                         ] = Field(default_factory=list)
@@ -281,7 +370,6 @@ class SearchCriteria(BaseModel):
     include_fields: Optional[List[str]] = Field(default_factory=list)
     metadata_view_id: Optional[UUID] = None
     query: Optional[str] = None
-    search_after: Optional[List[Any]] = Field(default_factory=list)
     search_fields: Optional[List[str]] = Field(default_factory=list)
     sort: Optional[List['CriteriaSortSchema']] = Field(default_factory=list)
 
@@ -530,6 +618,12 @@ class CriteriaRangeFilter(BaseModel):
 
 
 # Update forward references
+SearchViewsSchema.model_rebuild()
+SearchViewsIDSchema.model_rebuild()
+SearchViewSchema.model_rebuild()
+SearchViewFieldTypeWidthSchema.model_rebuild()
+SearchViewFieldTypeSchema.model_rebuild()
+SearchViewFieldTypeWidth.model_rebuild()
 SearchSuggestsResponseSchema.model_rebuild()
 SearchSuggestSchema.model_rebuild()
 SearchSuggestResponseSchema.model_rebuild()
@@ -541,6 +635,8 @@ SearchDocumentsSchema.model_rebuild()
 SearchDocumentSchema.model_rebuild()
 SearchDocumentInputSchema.model_rebuild()
 SearchCriteriaSchema.model_rebuild()
+SearchCriteriaSavedSchema.model_rebuild()
+SearchCriteriaBaseSchema.model_rebuild()
 SavedSearchesSchema.model_rebuild()
 SavedSearchSchema.model_rebuild()
 SavedSearchResultsSchema.model_rebuild()
@@ -553,7 +649,7 @@ SavedSearchElasticSchema.model_rebuild()
 SavedSearchCopyFromTemplateSchema.model_rebuild()
 SavedSearchConvertCollectionSchema.model_rebuild()
 SavedSearch.model_rebuild()
-SearchCriteria.model_rebuild()
+SearchCriteriaSaved.model_rebuild()
 ReindexSavedSearchSchema.model_rebuild()
 ReindexSavedSearchGroupSchema.model_rebuild()
 ListObjectsSchema.model_rebuild()

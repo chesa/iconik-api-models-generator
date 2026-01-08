@@ -34,6 +34,21 @@ class WildmokaSettingsSchema(BaseModel):
                                      'full_chroma_int', 'full_chroma_inp',
                                      'bitexact']] = None
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    wm_endpoint_url: Optional[str] = Field(
+        None, description="Wildmoka API endpoint URL"
+    )
+    wm_issuer: Optional[str] = Field(
+        None, description="JWT issuer to use for authentication"
+    )
+    wm_secret_key: Optional[str] = Field(
+        None, description="JWT secret key to use for authentication"
+    )
+    wm_storage_id: Optional[UUID] = Field(
+        None,
+        description=
+        "Storage ID to use for Wildmoka segmented and analyzed formats"
+    )
+    wm_video_variants: Optional[List[str]] = Field(default_factory=list)
 
 
 class WatchFolderVideoTranscoderSchema(BaseModel):
@@ -191,9 +206,31 @@ class TransferToStorageReadSchema(BaseModel):
     transfer_type: Optional[str] = None
 
 
+class TransferToStorageBaseSchema(BaseModel):
+    """Represents a TransferToStorageBaseSchema in the Iconik system."""
+    all_versions: Optional[bool] = Field(
+        None,
+        description="If true, all versions of the asset will be transferred"
+    )
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+
+
 class TransferSignedURLSchema(BaseModel):
     """Represents a TransferSignedURLSchema in the Iconik system."""
     url: Optional[HttpUrl] = None
+
+
+class TransferSavedSearchToStorageRequestSchema(BaseModel):
+    """Represents a TransferSavedSearchToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
 
 
 class TransferFromStorageSchema(BaseModel):
@@ -257,6 +294,34 @@ class TransferFromStorageReadSchema(BaseModel):
     transfer_type: Optional[str] = None
 
 
+class TransferFormatToStorageSchema(BaseModel):
+    """Represents a TransferFormatToStorageSchema in the Iconik system."""
+    destination_directory_path: Optional[str] = None
+    destination_filename: Optional[str] = None
+
+
+class TransferCollectionToStorageRequestSchema(BaseModel):
+    """Represents a TransferCollectionToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when transferring collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
 class TransferCloudSchema(BaseModel):
     """Represents a TransferCloudSchema in the Iconik system."""
     asset_id: Optional[UUID] = None
@@ -285,6 +350,35 @@ class TransferCloudSchema(BaseModel):
     user_id: Optional[UUID] = None
 
 
+class TransferBaseSchema(BaseModel):
+    """Represents a TransferBaseSchema in the Iconik system."""
+    destination_directory_path: Optional[str] = None
+
+
+class TransferAssetToStorageSchema(BaseModel):
+    """Represents a TransferAssetToStorageSchema in the Iconik system."""
+    all_versions: Optional[bool] = Field(
+        None,
+        description="If true, all versions of the asset will be transferred"
+    )
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class TransferAssetToStorageRequestSchema(BaseModel):
+    """Represents a TransferAssetToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
 class TranscodersSchema(BaseModel):
     """Represents a TranscodersSchema in the Iconik system."""
     facets: Optional[Dict[str, Any]] = Field(default_factory=dict)
@@ -309,7 +403,7 @@ class TranscodersQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -335,6 +429,29 @@ class TranscodersByStorageSchema(BaseModel):
     )
 
 
+class TranscoderUpdateSchema(BaseModel):
+    """Represents a TranscoderUpdateSchema in the Iconik system."""
+    id: Optional[UUID] = None
+    name: str
+    settings: Dict[str, Any]
+    type: Literal['VANTAGE', 'FFMPEG', 'EDIT_PROXY', 'IMAGEMAGICK',
+                  'ENCODING_COM', 'ZENCODER', 'TELESTREAM_CLOUD',
+                  'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER', 'REDLINE',
+                  'ICONIK_EDGE_TRANSCODER', 'WATCH_FOLDER_VIDEO', 'EDITREADY',
+                  'FLICS', 'WILDMOKA', 'LIBREOFFICE']
+
+
+class TranscoderTokenSchema(BaseModel):
+    """Represents a TranscoderTokenSchema in the Iconik system."""
+    token: Optional[str] = None
+
+
+class TranscoderTokenRequestSchema(BaseModel):
+    """Represents a TranscoderTokenRequestSchema in the Iconik system."""
+    expires_in: Optional[float] = Field(None, ge=0)
+    payload: Optional[Dict[str, Any]] = Field(default_factory=dict)
+
+
 class TranscoderSchema(BaseModel):
     """Represents a TranscoderSchema in the Iconik system."""
     id: Optional[UUID] = None
@@ -344,7 +461,7 @@ class TranscoderSchema(BaseModel):
                   'ENCODING_COM', 'ZENCODER', 'TELESTREAM_CLOUD',
                   'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER', 'REDLINE',
                   'ICONIK_EDGE_TRANSCODER', 'WATCH_FOLDER_VIDEO', 'EDITREADY',
-                  'FLICS', 'WILDMOKA']
+                  'FLICS', 'WILDMOKA', 'LIBREOFFICE']
 
 
 class TranscoderReadSchema(BaseModel):
@@ -356,7 +473,31 @@ class TranscoderReadSchema(BaseModel):
                   'ENCODING_COM', 'ZENCODER', 'TELESTREAM_CLOUD',
                   'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER', 'REDLINE',
                   'ICONIK_EDGE_TRANSCODER', 'WATCH_FOLDER_VIDEO', 'EDITREADY',
-                  'FLICS', 'WILDMOKA']
+                  'FLICS', 'WILDMOKA', 'LIBREOFFICE']
+
+
+class TranscoderOptionsSchema(BaseModel):
+    """Represents a TranscoderOptionsSchema in the Iconik system."""
+    objects: Optional[List['TranscoderOptionSchema']
+                      ] = Field(default_factory=list)
+
+
+class TranscoderOptionSchema(BaseModel):
+    """Represents a TranscoderOptionSchema in the Iconik system."""
+    label: Optional[str] = None
+    value: Optional[str] = None
+
+
+class TranscoderCreateSchema(BaseModel):
+    """Represents a TranscoderCreateSchema in the Iconik system."""
+    id: Optional[UUID] = None
+    name: str
+    settings: Dict[str, Any]
+    type: Literal['VANTAGE', 'FFMPEG', 'EDIT_PROXY', 'IMAGEMAGICK',
+                  'ENCODING_COM', 'ZENCODER', 'TELESTREAM_CLOUD',
+                  'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER', 'REDLINE',
+                  'ICONIK_EDGE_TRANSCODER', 'WATCH_FOLDER_VIDEO', 'EDITREADY',
+                  'FLICS', 'WILDMOKA', 'LIBREOFFICE']
 
 
 class TranscoderByStorageReadSchema(BaseModel):
@@ -370,7 +511,7 @@ class TranscoderByStorageReadSchema(BaseModel):
                            'ELEMENTAL_MEDIACONVERT', 'ELEMENTAL_SERVER',
                            'REDLINE', 'ICONIK_EDGE_TRANSCODER',
                            'WATCH_FOLDER_VIDEO', 'EDITREADY', 'FLICS',
-                           'WILDMOKA']] = None
+                           'WILDMOKA', 'LIBREOFFICE']] = None
 
 
 class TranscoderBaseSchema(BaseModel):
@@ -384,6 +525,7 @@ class TranscodeResponseSchema(BaseModel):
 
 class TranscodeRequestSchema(BaseModel):
     """Represents a TranscodeRequestSchema in the Iconik system."""
+    job_id: Optional[UUID] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
     set_as_custom_keyframe: Optional[bool] = None
     update_proxy_mediainfo: Optional[bool] = None
@@ -456,7 +598,9 @@ class TemporaryFileCreateSchema(BaseModel):
                              'DELETED']] = None
     storage_id: Optional[UUID] = None
     storage_method: Optional[str] = None
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
     upload_filename: Optional[str] = None
     upload_method: Optional[str] = None
@@ -479,6 +623,13 @@ class TelestreamCloudSchema(BaseModel):
     proxy_profile_id: str
     secret_key: str
     storage_id: str
+
+
+class SwapStoragesSchema(BaseModel):
+    """Represents a SwapStoragesSchema in the Iconik system."""
+    destination_storage_id: UUID
+    source_storage_id: UUID
+    system_domain_id: UUID
 
 
 class SubtitlesSchema(BaseModel):
@@ -550,7 +701,7 @@ class StoragesQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -630,7 +781,7 @@ class StorageFilesQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -668,7 +819,9 @@ class StorageFileUpdateSchema(BaseModel):
                              'ARCHIVED', 'MISSING', 'REDISCOVERED',
                              'DELETED']] = None
     storage_id: Optional[UUID] = None
-    type: Optional[Literal['FILE', 'DIRECTORY', 'SYMLINK']] = None
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Optional[Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']] = None
     user_id: Optional[UUID] = None
     version_id: Optional[UUID] = None
 
@@ -703,7 +856,9 @@ class StorageFileSchema(BaseModel):
         None,
         description="Deprecated field. Use destination_storage_id instead"
     )
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     url: Optional[str] = None
     user_id: Optional[UUID] = None
     version_id: Optional[UUID] = None
@@ -785,6 +940,61 @@ class S3SettingsSchema(BaseModel):
     write: Optional[bool] = None
 
 
+class RestoreSavedSearchToStorageRequestSchema(BaseModel):
+    """Represents a RestoreSavedSearchToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class RestoreCollectionToStorageRequestSchema(BaseModel):
+    """Represents a RestoreCollectionToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when transferring collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class RestoreAssetToStorageRequestSchema(BaseModel):
+    """Represents a RestoreAssetToStorageRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
 class ResolutionTypeSchema(BaseModel):
     """Represents a ResolutionTypeSchema in the Iconik system."""
     height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
@@ -860,6 +1070,7 @@ class ProxyUpdateSchema(BaseModel):
     """Represents a ProxyUpdateSchema in the Iconik system."""
     asset_id: Optional[UUID] = None
     audio_bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    audio_channels: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     bit_rate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     codec: Optional[str] = None
     date_created: Optional[datetime] = None
@@ -869,6 +1080,7 @@ class ProxyUpdateSchema(BaseModel):
     frame_rate: Optional[str] = None
     id: Optional[UUID] = None
     is_drop_frame: Optional[bool] = None
+    is_multichannel: Optional[bool] = None
     is_public: Optional[bool] = None
     name: Optional[str] = None
     resolution: Optional['ResolutionType'] = None
@@ -889,6 +1101,7 @@ class ProxySchema(BaseModel):
     """Represents a ProxySchema in the Iconik system."""
     asset_id: Optional[UUID] = None
     audio_bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    audio_channels: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     bit_rate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     codec: Optional[str] = None
     date_created: Optional[datetime] = None
@@ -898,6 +1111,7 @@ class ProxySchema(BaseModel):
     frame_rate: Optional[str] = None
     id: Optional[UUID] = None
     is_drop_frame: Optional[bool] = None
+    is_multichannel: Optional[bool] = None
     is_public: Optional[bool] = None
     multipart_upload_url: Optional[str] = None
     name: Optional[str] = None
@@ -928,6 +1142,7 @@ class ProxyCreateSchema(BaseModel):
     """Represents a ProxyCreateSchema in the Iconik system."""
     asset_id: Optional[UUID] = None
     audio_bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    audio_channels: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     bit_rate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     codec: Optional[str] = None
     date_created: Optional[datetime] = None
@@ -937,6 +1152,7 @@ class ProxyCreateSchema(BaseModel):
     frame_rate: Optional[str] = None
     id: Optional[UUID] = None
     is_drop_frame: Optional[bool] = None
+    is_multichannel: Optional[bool] = None
     is_public: Optional[bool] = None
     multipart_upload_url: Optional[str] = None
     name: Optional[str] = None
@@ -962,6 +1178,7 @@ class ProxyBaseSchema(BaseModel):
     """Represents a ProxyBaseSchema in the Iconik system."""
     asset_id: Optional[UUID] = None
     audio_bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    audio_channels: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     bit_rate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     codec: Optional[str] = None
     date_created: Optional[datetime] = None
@@ -971,6 +1188,7 @@ class ProxyBaseSchema(BaseModel):
     frame_rate: Optional[str] = None
     id: Optional[UUID] = None
     is_drop_frame: Optional[bool] = None
+    is_multichannel: Optional[bool] = None
     is_public: Optional[bool] = None
     name: Optional[str] = None
     resolution: Optional['ResolutionType'] = None
@@ -1015,6 +1233,98 @@ class PortalSettingsSchema(BaseModel):
     read: Optional[bool] = None
     scan: Optional[bool] = None
     write: Optional[bool] = None
+
+
+class PlaylistKeyframesSchema(BaseModel):
+    """Represents a PlaylistKeyframesSchema in the Iconik system."""
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List['PlaylistKeyframeSchema']
+                      ] = Field(default_factory=list)
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    scroll_id: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class PlaylistKeyframeUpdateSchema(BaseModel):
+    """Represents a PlaylistKeyframeUpdateSchema in the Iconik system."""
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    filename: Optional[str] = None
+    format: Optional[str] = None
+    is_custom_keyframe: Optional[bool] = None
+    is_public: Optional[bool] = None
+    name: Optional[str] = None
+    resolution: Optional['ResolutionType'] = None
+    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    size: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
+                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
+                             'DELETED']] = None
+    time_code: Optional['TimeCodeType'] = None
+    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
+    url: Optional[str] = None
+
+
+class PlaylistKeyframeSchema(BaseModel):
+    """Represents a PlaylistKeyframeSchema in the Iconik system."""
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    filename: Optional[str] = None
+    format: Optional[str] = None
+    id: Optional[UUID] = None
+    is_custom_keyframe: Optional[bool] = None
+    is_public: Optional[bool] = None
+    name: Optional[str] = None
+    playlist_id: Optional[UUID] = None
+    resolution: Optional['ResolutionType'] = None
+    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    size: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
+                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
+                             'DELETED']] = None
+    storage_id: Optional[UUID] = None
+    time_code: Optional['TimeCodeType'] = None
+    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
+    url: Optional[str] = None
+
+
+class PlaylistKeyframeCreateSchema(BaseModel):
+    """Represents a PlaylistKeyframeCreateSchema in the Iconik system."""
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    filename: Optional[str] = None
+    format: Optional[str] = None
+    id: Optional[UUID] = None
+    is_custom_keyframe: Optional[bool] = None
+    is_public: Optional[bool] = None
+    name: Optional[str] = None
+    playlist_id: Optional[UUID] = None
+    resolution: Optional['ResolutionType'] = None
+    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    size: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
+                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
+                             'DELETED']] = None
+    storage_id: Optional[UUID] = None
+    time_code: Optional['TimeCodeType'] = None
+    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
+    upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    upload_method: Optional[str] = None
+    upload_url: Optional[str] = None
+    url: Optional[str] = None
 
 
 class MultipartUploadSchema(BaseModel):
@@ -1141,20 +1451,12 @@ class ListObjectsSchema(BaseModel):
     )
 
 
-class KeyframesSchema(BaseModel):
-    """Represents a KeyframesSchema in the Iconik system."""
-    first_url: Optional[str] = None
-    last_url: Optional[str] = None
-    next_url: Optional[str] = None
-    objects: Optional[List['KeyframeSchema']] = Field(default_factory=list)
-    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    prev_url: Optional[str] = None
-    scroll_id: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+class LibreOfficeSettingsSchema(BaseModel):
+    """Represents a LibreOfficeSettingsSchema in the Iconik system."""
+    exclude_patterns: Optional[List[str]] = Field(default_factory=list)
+    include_patterns: Optional[List[str]] = Field(default_factory=list)
+    local: Optional[bool] = None
+    priority: Optional[int] = Field(None, ge=1, le=10)
 
 
 class KeyframeUpdateSchema(BaseModel):
@@ -1463,6 +1765,8 @@ class FormatSchema(BaseModel):
     date_deleted: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     deleted_by_user: Optional[UUID] = None
+    external_references: Optional[List['ExternalReferences']
+                                  ] = Field(default_factory=list)
     id: Optional[UUID] = None
     is_online: Optional[bool] = None
     metadata: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
@@ -1494,6 +1798,8 @@ class FormatElasticSchema(BaseModel):
     date_deleted: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     deleted_by_user: Optional[UUID] = None
+    external_references: Optional[List['ExternalReferences']
+                                  ] = Field(default_factory=list)
     id: Optional[UUID] = None
     is_online: Optional[bool] = None
     metadata: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
@@ -1523,6 +1829,7 @@ class FormatArchiveSchema(BaseModel):
 
 class FlicsTranscoderSchema(BaseModel):
     """Represents a FlicsTranscoderSchema in the Iconik system."""
+    audio_template_id: Optional[str] = None
     create_edit_proxy: Optional[bool] = None
     delete_after_upload: Optional[bool] = None
     edit_proxy_local_storage_path: Optional[str] = None
@@ -1530,9 +1837,13 @@ class FlicsTranscoderSchema(BaseModel):
     edit_proxy_upload_storage_path: Optional[str] = None
     exclude_patterns: Optional[List[str]] = Field(default_factory=list)
     host: Optional[str] = None
+    image_template_id: Optional[str] = None
     include_patterns: Optional[List[str]] = Field(default_factory=list)
     local: Optional[bool] = None
+    max_concurrency: Optional[int] = Field(None, ge=1)
+    secret_key: Optional[str] = None
     storage_id_path_mapping: Optional[Any] = None
+    storage_ids_mapping: Optional[Any] = None
     template_id: Optional[str] = None
 
 
@@ -1805,7 +2116,9 @@ class FileSchema(BaseModel):
     storage_id: Optional[UUID] = None
     storage_method: Optional[str] = None
     system_domain_id: Optional[UUID] = None
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
     upload_filename: Optional[str] = None
     upload_method: Optional[str] = None
@@ -1853,7 +2166,9 @@ class FileElasticSchema(BaseModel):
                              'ARCHIVED', 'MISSING', 'REDISCOVERED',
                              'DELETED']] = None
     storage_id: Optional[UUID] = None
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     user_id: Optional[UUID] = None
     version_id: Optional[UUID] = None
 
@@ -1903,12 +2218,15 @@ class FileDeletionFromLocalStorageSchema(BaseModel):
     asset_id: Optional[UUID] = None
     directory_path: Optional[str] = None
     file_id: UUID
+    file_type: Optional[str] = None
     filename: str
     format_id: Optional[UUID] = None
     id: Optional[UUID] = None
     job_id: UUID
     keep_source: Optional[bool] = None
     storage_id: UUID
+    template: Optional[str] = None
+    template_engine: Optional[str] = None
     version_id: Optional[UUID] = None
 
 
@@ -1940,7 +2258,9 @@ class FileCreateSchema(BaseModel):
                              'DELETED']] = None
     storage_id: Optional[UUID] = None
     storage_method: Optional[str] = None
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
     upload_filename: Optional[str] = None
     upload_method: Optional[str] = None
@@ -1975,7 +2295,9 @@ class FileBaseSchema(BaseModel):
                              'ARCHIVED', 'MISSING', 'REDISCOVERED',
                              'DELETED']] = None
     storage_id: Optional[UUID] = None
-    type: Literal['FILE', 'DIRECTORY', 'SYMLINK']
+    template: Optional[str] = None
+    template_engine: Optional[Literal['SIMPLE', 'JINJA2']] = None
+    type: Literal['FILE', 'DIRECTORY', 'SYMLINK', 'SEQUENCE']
     user_id: Optional[UUID] = None
     version_id: Optional[UUID] = None
 
@@ -1986,6 +2308,7 @@ class FFmpegSettingsSchema(BaseModel):
     bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     data: Optional[str] = None
     edit_proxy_folder: Optional[str] = None
+    enable_multi_channel_audio: Optional[bool] = None
     exclude_patterns: Optional[List[str]] = Field(default_factory=list)
     hdr_brightness: Optional[float] = Field(None, ge=-1, le=1)
     hdr_contrast: Optional[float] = Field(None, ge=0, le=2)
@@ -1995,6 +2318,7 @@ class FFmpegSettingsSchema(BaseModel):
     hdr_tonemap_peak: Optional[float] = Field(None, ge=0, le=1000)
     include_patterns: Optional[List[str]] = Field(default_factory=list)
     local: Optional[bool] = None
+    merge_multichannel_audio_tracks: Optional[bool] = None
     overlay_coordinates: Optional[str] = None
     overlay_url: Optional[str] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
@@ -2005,6 +2329,30 @@ class FFmpegSettingsSchema(BaseModel):
                                      'full_chroma_int', 'full_chroma_inp',
                                      'bitexact']] = None
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+
+
+class ExternalReferences(BaseModel):
+    """Represents a ExternalReferences in the Iconik system."""
+    action: Optional[str] = None
+    display_name: Optional[str] = None
+    icon: Optional[str] = None
+    uri: str
+
+
+class ExportSavedSearchRequestSchema(BaseModel):
+    """Represents a ExportSavedSearchRequestSchema in the Iconik system."""
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
 
 
 class ExportLocationsSchema(BaseModel):
@@ -2044,6 +2392,51 @@ class ExportLocationSchema(BaseModel):
     system_domain_id: Optional[UUID] = None
     transcode_profile_ids: Optional[List[UUID]] = Field(default_factory=list)
     transcription_format: Optional[Literal['WEBVTT', 'SRT']] = None
+
+
+class ExportCollectionRequestSchema(BaseModel):
+    """Represents a ExportCollectionRequestSchema in the Iconik system."""
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when exporting collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class ExportAssetRequestSchema(BaseModel):
+    """Represents a ExportAssetRequestSchema in the Iconik system."""
+    destination_filename: Optional[str] = Field(
+        None, description="Name of the file to export."
+    )
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
 
 
 class EncodingComSettingsSchema(BaseModel):
@@ -2125,6 +2518,7 @@ class Proxy(BaseModel):
     """Represents a Proxy in the Iconik system."""
     asset_id: Optional[UUID] = None
     audio_bitrate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    audio_channels: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     bit_rate: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     codec: Optional[str] = None
     date_created: Optional[datetime] = None
@@ -2134,6 +2528,7 @@ class Proxy(BaseModel):
     frame_rate: Optional[str] = None
     id: Optional[UUID] = None
     is_drop_frame: Optional[bool] = None
+    is_multichannel: Optional[bool] = None
     is_public: Optional[bool] = None
     multipart_upload_url: Optional[str] = None
     name: Optional[str] = None
@@ -2184,6 +2579,7 @@ class EditProxySchema(BaseModel):
     force_storage_id: Optional[bool] = None
     height: int = Field(..., ge=-2147483648, le=2147483647)
     ignore_transcoder_settings: Optional[bool] = None
+    keep_extension: Optional[bool] = None
     name: str
     storage_id: UUID
     version_id: UUID
@@ -2218,7 +2614,7 @@ class DeleteQueueFormatsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -2232,7 +2628,7 @@ class DeleteQueueFileSetsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -2271,7 +2667,7 @@ class ComponentSchema(BaseModel):
     metadata: Optional[Dict[str, str]] = Field(default_factory=dict)
     name: str
     type: Literal['VIDEO', 'AUDIO', 'IMAGE', 'TEXT', 'OTHER', 'NON_MEDIA',
-                  'EXIF', 'IPTC', 'XMP', 'GENERAL']
+                  'EXIF', 'IPTC', 'XMP', 'GENERAL', 'MANIFEST']
 
 
 class CompleteExportToLocalStorageSchema(BaseModel):
@@ -2324,37 +2720,6 @@ class CollectionKeyframesSchema(BaseModel):
     total: Optional[int] = Field(
         None, ge=-9223372036854775808, le=9223372036854775807
     )
-
-
-class KeyframeSchema(BaseModel):
-    """Represents a KeyframeSchema in the Iconik system."""
-    asset_id: Optional[UUID] = None
-    collection_id: Optional[UUID] = None
-    date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    filename: Optional[str] = None
-    format: Optional[str] = None
-    id: Optional[UUID] = None
-    is_custom_keyframe: Optional[bool] = None
-    is_public: Optional[bool] = None
-    name: Optional[str] = None
-    resolution: Optional['ResolutionType'] = None
-    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    size: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
-                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
-                             'DELETED']] = None
-    storage_id: Optional[UUID] = None
-    storage_method: Optional[str] = None
-    time_code: Optional['TimeCodeType'] = None
-    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
-    upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    upload_method: Optional[str] = None
-    upload_url: Optional[str] = None
-    url: Optional[str] = None
-    version_id: Optional[UUID] = None
 
 
 class CollectionKeyframeUpdateSchema(BaseModel):
@@ -2432,27 +2797,6 @@ class CollectionKeyframeCreateSchema(BaseModel):
     url: Optional[str] = None
 
 
-class TimeCodeType(BaseModel):
-    """Represents a TimeCodeType in the Iconik system."""
-    frames_number: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    is_drop_frame: Optional[bool] = None
-    time_base: Optional['TimeBaseType'] = None
-
-
-class TimeBaseType(BaseModel):
-    """Represents a TimeBaseType in the Iconik system."""
-    denominator: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    numerator: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-
-
-class ResolutionType(BaseModel):
-    """Represents a ResolutionType in the Iconik system."""
-    height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-
-
 class CollectionExportSchema(BaseModel):
     """Represents a CollectionExportSchema in the Iconik system."""
     delete_original: Optional[bool] = None
@@ -2494,7 +2838,7 @@ class BulkTransferToStorageSchema(BaseModel):
     keep_collection_structure: Optional[bool] = None
     keep_parent_collection_structure: Optional[bool] = None
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
     overwrite: Optional[bool] = None
     preferred_original_storage_id: Optional[UUID] = None
 
@@ -2506,21 +2850,186 @@ class BulkTransferSchema(BaseModel):
     delete_original: Optional[bool] = None
     keep_collection_structure: Optional[bool] = None
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
     preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkTransferSavedSearchRequestSchema(BaseModel):
+    """Represents a BulkTransferSavedSearchRequestSchema in the Iconik system."""
+    objects: Optional[List['TransferSavedSearchToStorageRequest']
+                      ] = Field(default_factory=list)
+
+
+class TransferSavedSearchToStorageRequest(BaseModel):
+    """Represents a TransferSavedSearchToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkTransferCollectionRequestSchema(BaseModel):
+    """Represents a BulkTransferCollectionRequestSchema in the Iconik system."""
+    objects: Optional[List['TransferCollectionToStorageRequest']
+                      ] = Field(default_factory=list)
+
+
+class TransferCollectionToStorageRequest(BaseModel):
+    """Represents a TransferCollectionToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when transferring collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkTransferAssetToStorageSchema(BaseModel):
+    """Represents a BulkTransferAssetToStorageSchema in the Iconik system."""
+    all_versions: Optional[bool] = Field(
+        None,
+        description="If true, all versions of the asset will be transferred"
+    )
+    asset_ids: List[UUID]
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+
+
+class BulkTransferAssetRequestSchema(BaseModel):
+    """Represents a BulkTransferAssetRequestSchema in the Iconik system."""
+    objects: Optional[List['TransferAssetToStorageRequest']
+                      ] = Field(default_factory=list)
+    parent_job_id: Optional[UUID] = Field(None, description="Parent job ID")
+
+
+class TransferAssetToStorageRequest(BaseModel):
+    """Represents a TransferAssetToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
 
 
 class BulkTranscodeSchema(BaseModel):
     """Represents a BulkTranscodeSchema in the Iconik system."""
     format_name: Optional[str] = None
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
     prefer_any_cloud: Optional[bool] = None
     preferred_storage_id: Optional[UUID] = None
     preferred_storage_method: Optional[Literal['FILE', 'HTTP', 'FTP', 'SFTP',
                                                'S3', 'B2', 'GCS', 'PORTAL',
                                                'CUSTOM', 'AZURE']] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
+
+
+class BulkRestoreSavedSearchRequestSchema(BaseModel):
+    """Represents a BulkRestoreSavedSearchRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to restore the saved searches to."
+    )
+    objects: Optional[List['RestoreSavedSearchToStorageRequest']
+                      ] = Field(default_factory=list)
+
+
+class RestoreSavedSearchToStorageRequest(BaseModel):
+    """Represents a RestoreSavedSearchToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class BulkRestoreCollectionRequestSchema(BaseModel):
+    """Represents a BulkRestoreCollectionRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to restore the saved searches to."
+    )
+    objects: Optional[List['RestoreCollectionToStorageRequest']
+                      ] = Field(default_factory=list)
+
+
+class RestoreCollectionToStorageRequest(BaseModel):
+    """Represents a RestoreCollectionToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when transferring collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class BulkRestoreAssetRequestSchema(BaseModel):
+    """Represents a BulkRestoreAssetRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to restore the assets to."
+    )
+    objects: Optional[List['RestoreAssetToStorageRequest']
+                      ] = Field(default_factory=list)
+    parent_job_id: Optional[UUID] = Field(None, description="Parent job ID")
+
+
+class RestoreAssetToStorageRequest(BaseModel):
+    """Represents a RestoreAssetToStorageRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    restore_priority: Optional[Any] = Field(
+        None,
+        description=
+        "The restore tier to use when retrieving from cold storage one of LOW, MID, HIGH."
+    )
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class BulkFilesetSchema(BaseModel):
+    """Represents a BulkFilesetSchema in the Iconik system."""
+    ids: List[UUID]
 
 
 class BulkFilesetRestoreSchema(BaseModel):
@@ -2533,7 +3042,7 @@ class BulkFilesetRestoreSchema(BaseModel):
     keep_collection_structure: Optional[bool] = None
     keep_parent_collection_structure: Optional[bool] = None
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
     preferred_original_storage_id: Optional[UUID] = None
 
 
@@ -2563,7 +3072,86 @@ class BulkFilesetArchiveSchema(BaseModel):
     keep_collection_structure: Optional[bool] = None
     keep_parent_collection_structure: Optional[bool] = None
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkExportSavedSearchRequestSchema(BaseModel):
+    """Represents a BulkExportSavedSearchRequestSchema in the Iconik system."""
+    objects: Optional[List['ExportSavedSearchRequest']
+                      ] = Field(default_factory=list)
+
+
+class ExportSavedSearchRequest(BaseModel):
+    """Represents a ExportSavedSearchRequest in the Iconik system."""
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkExportCollectionRequestSchema(BaseModel):
+    """Represents a BulkExportCollectionRequestSchema in the Iconik system."""
+    objects: Optional[List['ExportCollectionRequest']
+                      ] = Field(default_factory=list)
+
+
+class ExportCollectionRequest(BaseModel):
+    """Represents a ExportCollectionRequest in the Iconik system."""
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when exporting collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when transferring collections."
+    )
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkExportAssetRequestSchema(BaseModel):
+    """Represents a BulkExportAssetRequestSchema in the Iconik system."""
+    objects: Optional[List['ExportAssetRequest']] = Field(default_factory=list)
+    parent_job_id: Optional[UUID] = Field(None, description="Parent job ID")
+
+
+class ExportAssetRequest(BaseModel):
+    """Represents a ExportAssetRequest in the Iconik system."""
+    destination_filename: Optional[str] = Field(
+        None, description="Name of the file to export."
+    )
+    export_metadata: Optional[bool] = Field(
+        None, description="Whether to export metadata."
+    )
+    export_to_asset_folder: Optional[bool] = Field(
+        None, description="Whether to export to asset folder."
+    )
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to export.")
+    overwrite: Optional[bool] = Field(
+        None, description="Whether to overwrite existing files."
+    )
     preferred_original_storage_id: Optional[UUID] = None
 
 
@@ -2583,10 +3171,52 @@ class BulkAssetIdsWithFiles(BaseModel):
     asset_ids: Optional[List[UUID]] = Field(default_factory=list)
 
 
+class BulkArchiveSavedSearchRequestSchema(BaseModel):
+    """Represents a BulkArchiveSavedSearchRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to archive the saved searches to."
+    )
+    objects: Optional[List['ArchiveSavedSearchRequest']
+                      ] = Field(default_factory=list)
+
+
+class BulkArchiveCollectionRequestSchema(BaseModel):
+    """Represents a BulkArchiveCollectionRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to archive the collections to."
+    )
+    objects: Optional[List['ArchiveCollectionRequest']
+                      ] = Field(default_factory=list)
+
+
+class BulkArchiveAssetSchema(BaseModel):
+    """Represents a BulkArchiveAssetSchema in the Iconik system."""
+    all_versions: Optional[bool] = Field(
+        None,
+        description="If true, all versions of the asset will be transferred"
+    )
+    asset_ids: List[UUID]
+    delete_only_from_source_folder: Optional[bool] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    destination_storage_id: Optional[UUID] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class BulkArchiveAssetRequestSchema(BaseModel):
+    """Represents a BulkArchiveAssetRequestSchema in the Iconik system."""
+    destination_storage_id: Optional[UUID] = Field(
+        None, description="ID of the storage to archive the assets to."
+    )
+    objects: Optional[List['ArchiveAssetRequest']] = Field(default_factory=list)
+    parent_job_id: Optional[UUID] = Field(None, description="Parent job ID")
+
+
 class BulkActionSchema(BaseModel):
     """Represents a BulkActionSchema in the Iconik system."""
     object_ids: List[UUID]
-    object_type: Literal['assets', 'collections', 'saved_searches']
+    object_type: Literal['assets', 'collections', 'playlists', 'saved_searches']
 
 
 class BaseQueryParamsSchema(BaseModel):
@@ -2595,7 +3225,7 @@ class BaseQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -2683,6 +3313,118 @@ class AzureSettingsSchema(BaseModel):
     write: Optional[bool] = None
 
 
+class AssetVersionsKeyframesSchema(BaseModel):
+    """Represents a AssetVersionsKeyframesSchema in the Iconik system."""
+    objects: Optional[List['AssetVersionKeyframesSchema']
+                      ] = Field(default_factory=list)
+
+
+class KeyframesSchema(BaseModel):
+    """Represents a KeyframesSchema in the Iconik system."""
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List['KeyframeSchema']] = Field(default_factory=list)
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    scroll_id: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class KeyframeSchema(BaseModel):
+    """Represents a KeyframeSchema in the Iconik system."""
+    asset_id: Optional[UUID] = None
+    collection_id: Optional[UUID] = None
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    filename: Optional[str] = None
+    format: Optional[str] = None
+    id: Optional[UUID] = None
+    is_custom_keyframe: Optional[bool] = None
+    is_public: Optional[bool] = None
+    name: Optional[str] = None
+    resolution: Optional['ResolutionType'] = None
+    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    size: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
+                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
+                             'DELETED']] = None
+    storage_id: Optional[UUID] = None
+    storage_method: Optional[str] = None
+    time_code: Optional['TimeCodeType'] = None
+    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
+    upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    upload_method: Optional[str] = None
+    upload_url: Optional[str] = None
+    url: Optional[str] = None
+    version_id: Optional[UUID] = None
+
+
+class AssetVersionKeyframesSchema(BaseModel):
+    """Represents a AssetVersionKeyframesSchema in the Iconik system."""
+    asset_id: UUID
+    keyframes: Optional[List['Keyframe']] = Field(default_factory=list)
+    version_id: str
+
+
+class Keyframe(BaseModel):
+    """Represents a Keyframe in the Iconik system."""
+    asset_id: Optional[UUID] = None
+    collection_id: Optional[UUID] = None
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    filename: Optional[str] = None
+    format: Optional[str] = None
+    id: Optional[UUID] = None
+    is_custom_keyframe: Optional[bool] = None
+    is_public: Optional[bool] = None
+    name: Optional[str] = None
+    resolution: Optional['ResolutionType'] = None
+    rotation: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    size: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    status: Optional[Literal['OPEN', 'GROWING', 'AWAITED', 'CLOSED', 'FAILED',
+                             'ARCHIVED', 'MISSING', 'REDISCOVERED',
+                             'DELETED']] = None
+    storage_id: Optional[UUID] = None
+    storage_method: Optional[str] = None
+    time_code: Optional['TimeCodeType'] = None
+    type: Literal['KEYFRAME_MAP', 'KEYFRAME', 'POSTER']
+    upload_credentials: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    upload_method: Optional[str] = None
+    upload_url: Optional[str] = None
+    url: Optional[str] = None
+    version_id: Optional[UUID] = None
+
+
+class TimeCodeType(BaseModel):
+    """Represents a TimeCodeType in the Iconik system."""
+    frames_number: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+    is_drop_frame: Optional[bool] = None
+    time_base: Optional['TimeBaseType'] = None
+
+
+class TimeBaseType(BaseModel):
+    """Represents a TimeBaseType in the Iconik system."""
+    denominator: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    numerator: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+
+
+class ResolutionType(BaseModel):
+    """Represents a ResolutionType in the Iconik system."""
+    height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+
+
 class AssetSubclipKeyframesSchema(BaseModel):
     """Represents a AssetSubclipKeyframesSchema in the Iconik system."""
     asset_id: UUID
@@ -2739,6 +3481,140 @@ class AssetBatchExportItemSchema(BaseModel):
     asset_id: UUID
     file_name: Optional[str] = None
     format_id: Optional[UUID] = None
+
+
+class ArchiveSavedSearchRequestSchema(BaseModel):
+    """Represents a ArchiveSavedSearchRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class ArchiveSavedSearchRequest(BaseModel):
+    """Represents a ArchiveSavedSearchRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class ArchiveCollectionRequestSchema(BaseModel):
+    """Represents a ArchiveCollectionRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when archiving collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when archiving collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class ArchiveCollectionRequest(BaseModel):
+    """Represents a ArchiveCollectionRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    keep_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the collection structure when archiving collections."
+    )
+    keep_parent_collection_structure: Optional[bool] = Field(
+        None,
+        description=
+        "Whether to keep the parent collection structure when archiving collections."
+    )
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class ArchiveAssetRequestSchema(BaseModel):
+    """Represents a ArchiveAssetRequestSchema in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class ArchiveAssetRequest(BaseModel):
+    """Represents a ArchiveAssetRequest in the Iconik system."""
+    all_versions: Optional[bool] = None
+    delete_only_from_source: Optional[bool] = None
+    delete_only_from_source_context: Optional['SourceContext'] = None
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    formats: Optional[List[str]] = Field(default_factory=list)
+    id: UUID = Field(..., description="ID of the object to transfer.")
+    preferred_original_storage_id: Optional[UUID] = None
+    version_ids: Optional[List[UUID]] = Field(default_factory=list)
+
+
+class SourceContext(BaseModel):
+    """Represents a SourceContext in the Iconik system."""
+    external_id: Optional[str] = Field(
+        None, description="external storage path / id"
+    )
+    root_collection_path: Optional[str] = Field(
+        None, description="root collection path"
+    )
+    root_collection_storage_id: Optional[UUID] = Field(
+        None, description="root collection storage ID"
+    )
+    storage_id: Optional[UUID] = None
+
+
+class ArchiveAssetFormatSchema(BaseModel):
+    """Represents a ArchiveAssetFormatSchema in the Iconik system."""
+    delete_original: Optional[bool] = None
+    destination_directory_path: Optional[str] = None
+    destination_filename: Optional[str] = None
+    destination_storage_id: Optional[UUID] = None
+    preferred_original_storage_id: Optional[UUID] = None
+
+
+class AnalysisTranscriptionSettingsSchema(BaseModel):
+    """Represents a AnalysisTranscriptionSettingsSchema in the Iconik system."""
+    analysis_service_account_id: UUID
+    analysis_service_account_settings: Optional[Dict[str, Any]
+                                                ] = Field(default_factory=dict)
+    enabled: Optional[bool] = None
+    id: Optional[UUID] = None
+    is_default: Optional[bool] = None
+    media_type: Literal['image', 'video', 'transcription', 'face_image',
+                        'face_video']
+    name: str
+    service_type: Optional[Literal['GOOGLE_VISION', 'GOOGLE_VIDEO_INTELLIGENCE',
+                                   'AMAZON_REKOGNITION', 'REV_AI', 'ICONIK',
+                                   'ICONIK_FACE_RECOGNITION']] = None
+    settings: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
 class AnalysisServiceAccountsSchema(BaseModel):
@@ -2892,15 +3768,28 @@ TransfersToStorageSchema.model_rebuild()
 TransfersFromStorageSchema.model_rebuild()
 TransferToStorageSchema.model_rebuild()
 TransferToStorageReadSchema.model_rebuild()
+TransferToStorageBaseSchema.model_rebuild()
 TransferSignedURLSchema.model_rebuild()
+TransferSavedSearchToStorageRequestSchema.model_rebuild()
 TransferFromStorageSchema.model_rebuild()
 TransferFromStorageReadSchema.model_rebuild()
+TransferFormatToStorageSchema.model_rebuild()
+TransferCollectionToStorageRequestSchema.model_rebuild()
 TransferCloudSchema.model_rebuild()
+TransferBaseSchema.model_rebuild()
+TransferAssetToStorageSchema.model_rebuild()
+TransferAssetToStorageRequestSchema.model_rebuild()
 TranscodersSchema.model_rebuild()
 TranscodersQueryParamsSchema.model_rebuild()
 TranscodersByStorageSchema.model_rebuild()
+TranscoderUpdateSchema.model_rebuild()
+TranscoderTokenSchema.model_rebuild()
+TranscoderTokenRequestSchema.model_rebuild()
 TranscoderSchema.model_rebuild()
 TranscoderReadSchema.model_rebuild()
+TranscoderOptionsSchema.model_rebuild()
+TranscoderOptionSchema.model_rebuild()
+TranscoderCreateSchema.model_rebuild()
 TranscoderByStorageReadSchema.model_rebuild()
 TranscoderBaseSchema.model_rebuild()
 TranscodeResponseSchema.model_rebuild()
@@ -2910,6 +3799,7 @@ TimeBaseTypeSchema.model_rebuild()
 TemporaryFileSetSchema.model_rebuild()
 TemporaryFileCreateSchema.model_rebuild()
 TelestreamCloudSchema.model_rebuild()
+SwapStoragesSchema.model_rebuild()
 SubtitlesSchema.model_rebuild()
 SubtitleSchema.model_rebuild()
 SubtitleRequestSchema.model_rebuild()
@@ -2930,6 +3820,9 @@ StorageAutoScanSchema.model_rebuild()
 StorageAccessSchema.model_rebuild()
 SftpSettingsSchema.model_rebuild()
 S3SettingsSchema.model_rebuild()
+RestoreSavedSearchToStorageRequestSchema.model_rebuild()
+RestoreCollectionToStorageRequestSchema.model_rebuild()
+RestoreAssetToStorageRequestSchema.model_rebuild()
 ResolutionTypeSchema.model_rebuild()
 ReindexTranscoderSchema.model_rebuild()
 ReindexStorageSchema.model_rebuild()
@@ -2946,6 +3839,10 @@ ProxyBaseSchema.model_rebuild()
 ProxiesSchema.model_rebuild()
 PrioDirSchema.model_rebuild()
 PortalSettingsSchema.model_rebuild()
+PlaylistKeyframesSchema.model_rebuild()
+PlaylistKeyframeUpdateSchema.model_rebuild()
+PlaylistKeyframeSchema.model_rebuild()
+PlaylistKeyframeCreateSchema.model_rebuild()
 MultipartUploadSchema.model_rebuild()
 MultipartUploadProxyCleanupSchema.model_rebuild()
 MultipartUploadComposeSchema.model_rebuild()
@@ -2961,7 +3858,7 @@ MultiPartS3UrlPartsSchema.model_rebuild()
 MultiPartS3UrlPartSchema.model_rebuild()
 MoveAssetResourceSchema.model_rebuild()
 ListObjectsSchema.model_rebuild()
-KeyframesSchema.model_rebuild()
+LibreOfficeSettingsSchema.model_rebuild()
 KeyframeUpdateSchema.model_rebuild()
 KeyframeCreateSchema.model_rebuild()
 KeyframeBaseSchema.model_rebuild()
@@ -3008,8 +3905,12 @@ FileDeletionFromLocalStorageSchema.model_rebuild()
 FileCreateSchema.model_rebuild()
 FileBaseSchema.model_rebuild()
 FFmpegSettingsSchema.model_rebuild()
+ExternalReferences.model_rebuild()
+ExportSavedSearchRequestSchema.model_rebuild()
 ExportLocationsSchema.model_rebuild()
 ExportLocationSchema.model_rebuild()
+ExportCollectionRequestSchema.model_rebuild()
+ExportAssetRequestSchema.model_rebuild()
 EncodingComSettingsSchema.model_rebuild()
 ElementalServerSchema.model_rebuild()
 ElementalMediaConvertSchema.model_rebuild()
@@ -3026,36 +3927,73 @@ ComponentsSchema.model_rebuild()
 ComponentSchema.model_rebuild()
 CompleteExportToLocalStorageSchema.model_rebuild()
 CollectionKeyframesSchema.model_rebuild()
-KeyframeSchema.model_rebuild()
 CollectionKeyframeUpdateSchema.model_rebuild()
 CollectionKeyframeSchema.model_rebuild()
 CollectionKeyframeCreateSchema.model_rebuild()
-TimeCodeType.model_rebuild()
-TimeBaseType.model_rebuild()
-ResolutionType.model_rebuild()
 CollectionExportSchema.model_rebuild()
 CollectionCopyKeyframesResponseSchema.model_rebuild()
 CollectionCopyKeyframesRequestSchema.model_rebuild()
 CheckAssetHasFilesSchema.model_rebuild()
 BulkTransferToStorageSchema.model_rebuild()
 BulkTransferSchema.model_rebuild()
+BulkTransferSavedSearchRequestSchema.model_rebuild()
+TransferSavedSearchToStorageRequest.model_rebuild()
+BulkTransferCollectionRequestSchema.model_rebuild()
+TransferCollectionToStorageRequest.model_rebuild()
+BulkTransferAssetToStorageSchema.model_rebuild()
+BulkTransferAssetRequestSchema.model_rebuild()
+TransferAssetToStorageRequest.model_rebuild()
 BulkTranscodeSchema.model_rebuild()
+BulkRestoreSavedSearchRequestSchema.model_rebuild()
+RestoreSavedSearchToStorageRequest.model_rebuild()
+BulkRestoreCollectionRequestSchema.model_rebuild()
+RestoreCollectionToStorageRequest.model_rebuild()
+BulkRestoreAssetRequestSchema.model_rebuild()
+RestoreAssetToStorageRequest.model_rebuild()
+BulkFilesetSchema.model_rebuild()
 BulkFilesetRestoreSchema.model_rebuild()
 BulkFilesetExportSchema.model_rebuild()
 BulkFilesetArchiveSchema.model_rebuild()
+BulkExportSavedSearchRequestSchema.model_rebuild()
+ExportSavedSearchRequest.model_rebuild()
+BulkExportCollectionRequestSchema.model_rebuild()
+ExportCollectionRequest.model_rebuild()
+BulkExportAssetRequestSchema.model_rebuild()
+ExportAssetRequest.model_rebuild()
 BulkCheckAssetHasFilesSchema.model_rebuild()
 CheckAssetHasFiles.model_rebuild()
 BulkAssetIdsWithFiles.model_rebuild()
+BulkArchiveSavedSearchRequestSchema.model_rebuild()
+BulkArchiveCollectionRequestSchema.model_rebuild()
+BulkArchiveAssetSchema.model_rebuild()
+BulkArchiveAssetRequestSchema.model_rebuild()
 BulkActionSchema.model_rebuild()
 BaseQueryParamsSchema.model_rebuild()
 BaseExportSchema.model_rebuild()
 B2SettingsSchema.model_rebuild()
 AzureSettingsSchema.model_rebuild()
+AssetVersionsKeyframesSchema.model_rebuild()
+KeyframesSchema.model_rebuild()
+KeyframeSchema.model_rebuild()
+AssetVersionKeyframesSchema.model_rebuild()
+Keyframe.model_rebuild()
+TimeCodeType.model_rebuild()
+TimeBaseType.model_rebuild()
+ResolutionType.model_rebuild()
 AssetSubclipKeyframesSchema.model_rebuild()
 AssetLinkProxySchema.model_rebuild()
 AssetExportSchema.model_rebuild()
 AssetBatchExportSchema.model_rebuild()
 AssetBatchExportItemSchema.model_rebuild()
+ArchiveSavedSearchRequestSchema.model_rebuild()
+ArchiveSavedSearchRequest.model_rebuild()
+ArchiveCollectionRequestSchema.model_rebuild()
+ArchiveCollectionRequest.model_rebuild()
+ArchiveAssetRequestSchema.model_rebuild()
+ArchiveAssetRequest.model_rebuild()
+SourceContext.model_rebuild()
+ArchiveAssetFormatSchema.model_rebuild()
+AnalysisTranscriptionSettingsSchema.model_rebuild()
 AnalysisServiceAccountsSchema.model_rebuild()
 AnalysisServiceAccountSchema.model_rebuild()
 AnalysisServiceAccountReadSchema.model_rebuild()

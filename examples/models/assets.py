@@ -10,6 +10,24 @@ from uuid import UUID
 from pydantic import BaseModel, Field, HttpUrl
 
 
+class UploadStorageSchema(BaseModel):
+    """Represents a UploadStorageSchema in the Iconik system."""
+    add_uuid_to_filenames: bool
+    id: UUID
+    method: Literal['FILE', 'HTTP', 'FTP', 'SFTP', 'S3', 'B2', 'GCS', 'PORTAL',
+                    'CUSTOM', 'AZURE']
+    presign_md5_checksum: Optional[bool] = None
+
+
+class UploadStorage(BaseModel):
+    """Represents a UploadStorage in the Iconik system."""
+    add_uuid_to_filenames: bool
+    id: UUID
+    method: Literal['FILE', 'HTTP', 'FTP', 'SFTP', 'S3', 'B2', 'GCS', 'PORTAL',
+                    'CUSTOM', 'AZURE']
+    presign_md5_checksum: Optional[bool] = None
+
+
 class TranscriptionTypeSchema(BaseModel):
     """Represents a TranscriptionTypeSchema in the Iconik system."""
     speaker: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
@@ -142,6 +160,7 @@ class ShareURLSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     date_created: Optional[datetime] = None
     expires: Optional[datetime] = None
     has_password: Optional[bool] = None
@@ -152,9 +171,11 @@ class ShareURLSchema(BaseModel):
     object_id: Optional[str] = None
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
+    population_status: Optional[Literal['POPULATING', 'FINISHED']] = None
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -174,6 +195,7 @@ class ShareURLCreateSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     expires: Optional[datetime] = None
     is_approval: Optional[bool] = None
     metadata_views: Optional[List[str]] = Field(default_factory=list)
@@ -181,6 +203,7 @@ class ShareURLCreateSchema(BaseModel):
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
     password: Optional[str] = None
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -192,6 +215,7 @@ class ShareTokenSchema(BaseModel):
     app_id: str
     email: str
     expires: datetime
+    is_internal_user: bool
     object_id: str
     object_type: str
     roles: List[str]
@@ -214,6 +238,7 @@ class ShareSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     date_created: Optional[datetime] = None
     expires: Optional[datetime] = None
     has_password: Optional[bool] = None
@@ -224,9 +249,11 @@ class ShareSchema(BaseModel):
     object_id: Optional[str] = None
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
+    population_status: Optional[Literal['POPULATING', 'FINISHED']] = None
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -251,8 +278,10 @@ class ShareOptionsBaseSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     is_approval: Optional[bool] = None
     metadata_views: Optional[List[str]] = Field(default_factory=list)
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     upload_storage_id: Optional[UUID] = None
 
@@ -280,6 +309,7 @@ class ShareElasticSchema(BaseModel):
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
     approval: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    automatic_approval_share: Optional[bool] = None
     date_created: Optional[datetime] = None
     expires: Optional[datetime] = None
     has_password: Optional[bool] = None
@@ -292,9 +322,11 @@ class ShareElasticSchema(BaseModel):
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
     personal_url: Optional[str] = None
+    population_status: Optional[Literal['POPULATING', 'FINISHED']] = None
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -323,6 +355,7 @@ class ShareCreateSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     emails: List[str]
     expires: Optional[datetime] = None
     id: Optional[str] = None
@@ -336,6 +369,7 @@ class ShareCreateSchema(BaseModel):
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -354,6 +388,7 @@ class ShareBaseSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     date_created: Optional[datetime] = None
     expires: Optional[datetime] = None
     has_password: Optional[bool] = None
@@ -364,9 +399,11 @@ class ShareBaseSchema(BaseModel):
     object_id: Optional[str] = None
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
+    population_status: Optional[Literal['POPULATING', 'FINISHED']] = None
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
@@ -396,7 +433,7 @@ class SequencesQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -425,7 +462,7 @@ class SequenceItemsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -508,6 +545,11 @@ class SegmentSchema(BaseModel):
                                   ] = Field(default_factory=list)
     has_drawing: Optional[bool] = None
     id: Optional[UUID] = None
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -554,7 +596,7 @@ class SegmentQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -575,6 +617,11 @@ class SegmentElasticSchema(BaseModel):
                                   ] = Field(default_factory=list)
     has_drawing: Optional[bool] = None
     id: Optional[UUID] = None
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -625,6 +672,11 @@ class SegmentBaseSchema(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBoxSchema']
                                   ] = Field(default_factory=list)
     id: Optional[UUID] = None
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -694,7 +746,7 @@ class RelationsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -868,7 +920,7 @@ class ProjectsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -902,7 +954,7 @@ class ProjectMembersQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -972,6 +1024,14 @@ class ProjectBaseSchema(BaseModel):
     system_domain_id: Optional[UUID] = None
 
 
+class ProcessBulkPersonsSchema(BaseModel):
+    """Represents a ProcessBulkPersonsSchema in the Iconik system."""
+    job_id: UUID
+    new_person_id: Optional[UUID] = None
+    person_ids: List[UUID]
+    queue_name: str
+
+
 class PlaylistsSchema(BaseModel):
     """Represents a PlaylistsSchema in the Iconik system."""
     first_url: Optional[str] = None
@@ -994,7 +1054,7 @@ class PlaylistsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -1005,10 +1065,13 @@ class PlaylistsQueryParamsSchema(BaseModel):
 class PlaylistSchema(BaseModel):
     """Represents a PlaylistSchema in the Iconik system."""
     created_by_user: Optional[UUID] = None
+    custom_keyframe: Optional[UUID] = None
+    custom_poster: Optional[UUID] = None
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     id: Optional[UUID] = None
     item_count: Optional[int] = None
+    keyframe_asset_ids: Optional[List[UUID]] = Field(default_factory=list)
     name: str
     playlist_items: Optional[List['PlaylistItemSchema']
                              ] = Field(default_factory=list)
@@ -1029,7 +1092,7 @@ class PlaylistItemsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -1067,6 +1130,7 @@ class PlaylistItemElasticSchema(BaseModel):
     analyze_status: Optional[Literal['N/A', 'REQUESTED', 'IN_PROGRESS',
                                      'FAILED', 'DONE']] = None
     ancestor_collections: Optional[List[str]] = Field(default_factory=list)
+    approval: Optional[Any] = None
     archive_status: Optional[Literal['NOT_ARCHIVED', 'ARCHIVING',
                                      'FAILED_TO_ARCHIVE', 'ARCHIVED']] = None
     category: Optional[str] = None
@@ -1091,6 +1155,7 @@ class PlaylistItemElasticSchema(BaseModel):
                                               'FAILED', 'DONE']] = None
     favoured: Optional[bool] = None
     files: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    formats: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     has_unconfirmed_persons: Optional[bool] = None
     id: Optional[UUID] = None
     in_collections: Optional[List[str]] = Field(default_factory=list)
@@ -1098,6 +1163,7 @@ class PlaylistItemElasticSchema(BaseModel):
     is_online: Optional[bool] = None
     keyframes: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     media_type: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     object_type: Optional[str] = None
@@ -1129,9 +1195,12 @@ class PlaylistItemElasticSchema(BaseModel):
 class PlaylistCreateSchema(BaseModel):
     """Represents a PlaylistCreateSchema in the Iconik system."""
     created_by_user: Optional[UUID] = None
+    custom_keyframe: Optional[UUID] = None
+    custom_poster: Optional[UUID] = None
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     id: Optional[UUID] = None
+    keyframe_asset_ids: Optional[List[UUID]] = Field(default_factory=list)
     name: str
     playlist_items: Optional[List['PlaylistItem']] = Field(default_factory=list)
     project_id: Optional[UUID] = None
@@ -1156,9 +1225,12 @@ class PlaylistItem(BaseModel):
 class PlaylistBaseSchema(BaseModel):
     """Represents a PlaylistBaseSchema in the Iconik system."""
     created_by_user: Optional[UUID] = None
+    custom_keyframe: Optional[UUID] = None
+    custom_poster: Optional[UUID] = None
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     id: Optional[UUID] = None
+    keyframe_asset_ids: Optional[List[UUID]] = Field(default_factory=list)
     name: str
     project_id: Optional[UUID] = None
     status: Optional[Literal['HIDDEN']] = None
@@ -1168,14 +1240,42 @@ class PlaylistBaseSchema(BaseModel):
 class Playlist(BaseModel):
     """Represents a Playlist in the Iconik system."""
     created_by_user: Optional[UUID] = None
+    custom_keyframe: Optional[UUID] = None
+    custom_poster: Optional[UUID] = None
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     id: Optional[UUID] = None
     item_count: Optional[int] = None
+    keyframe_asset_ids: Optional[List[UUID]] = Field(default_factory=list)
     name: str
     project_id: Optional[UUID] = None
     status: Optional[Literal['HIDDEN']] = None
     system_domain_id: Optional[UUID] = None
+
+
+class MagicLinkValidateSchema(BaseModel):
+    """Represents a MagicLinkValidateSchema in the Iconik system."""
+    app_id: Optional[str] = Field(
+        None, description="App ID for session fallback authentication"
+    )
+    email: str = Field(..., description="The recipient email address")
+    hash: str = Field(..., description="The JWT magic link token")
+    password: Optional[str] = Field(
+        None, description="Password for password-protected shares"
+    )
+    token: Optional[str] = Field(
+        None, description="Auth token for session fallback authentication"
+    )
+
+
+class MagicLinkRequestSchema(BaseModel):
+    """Represents a MagicLinkRequestSchema in the Iconik system."""
+    email: str
+
+
+class MagicLinkCheckSettingSchema(BaseModel):
+    """Represents a MagicLinkCheckSettingSchema in the Iconik system."""
+    hash: str
 
 
 class ListObjectsSchema(BaseModel):
@@ -1205,6 +1305,7 @@ class GetShareSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     date_created: Optional[datetime] = None
     expires: Optional[datetime] = None
     has_password: Optional[bool] = None
@@ -1215,12 +1316,15 @@ class GetShareSchema(BaseModel):
     object_id: Optional[str] = None
     object_type: Optional[str] = None
     owner_id: Optional[str] = None
+    population_status: Optional[Literal['POPULATING', 'FINISHED']] = None
     project_id: Optional[UUID] = Field(
         None, description="Project ID if the share is created from a project"
     )
+    review_experience_public_beta: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
     title: Optional[str] = None
+    upload_storage: Optional[Any] = None
     upload_storage_id: Optional[UUID] = None
     upload_storage_presign_md5_checksum: Optional[bool] = None
     url: Optional[str] = None
@@ -1268,10 +1372,17 @@ class FavoritesSchema(BaseModel):
     )
 
 
+class FaceLandmarkSchema(BaseModel):
+    """Represents a FaceLandmarkSchema in the Iconik system."""
+    x: float
+    y: float
+
+
 class FaceBoundingBoxSchema(BaseModel):
     """Represents a FaceBoundingBoxSchema in the Iconik system."""
     bounding_box: Optional[List[float]] = Field(default_factory=list)
-    face_id: UUID
+    landmarks: Optional[List['FaceLandmark']] = Field(default_factory=list)
+    person_version_face_id: UUID
     timestamp_ms: Optional[int] = Field(
         None, ge=-9223372036854775808, le=9223372036854775807
     )
@@ -1287,6 +1398,11 @@ class EditSegmentSchema(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBox']
                                   ] = Field(default_factory=list)
     id: Optional[UUID] = None
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -1337,6 +1453,11 @@ class EditSegmentForBulkSchema(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBox']
                                   ] = Field(default_factory=list)
     id: UUID
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -1379,7 +1500,25 @@ class EditSegmentForBulkSchema(BaseModel):
 
 class EditPersonStatusSchema(BaseModel):
     """Represents a EditPersonStatusSchema in the Iconik system."""
-    status: Literal['NEW', 'UNCONFIRMED', 'SYSTEM_CONFIRMED', 'USER_CONFIRMED']
+    first_url: Optional[str] = None
+    has_unconfirmed_persons: Optional[bool] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: List['EditPersonAssetVersionSchema']
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    scroll_id: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class EditPersonAssetVersionSchema(BaseModel):
+    """Represents a EditPersonAssetVersionSchema in the Iconik system."""
+    asset_id: UUID
+    version_id: UUID
 
 
 class EditAssetVersionSchema(BaseModel):
@@ -1415,6 +1554,11 @@ class EditAssetSegmentSchema(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBox']
                                   ] = Field(default_factory=list)
     id: UUID
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -1459,6 +1603,7 @@ class DrawingSchema(BaseModel):
     """Represents a DrawingSchema in the Iconik system."""
     primitives: Optional[List['DrawingPrimitiveSchema']
                          ] = Field(default_factory=list)
+    version: Optional[int] = None
 
 
 class DrawingPrimitiveSchema(BaseModel):
@@ -1473,13 +1618,14 @@ class DrawingPrimitiveSchema(BaseModel):
 
 class DrawingPointSchema(BaseModel):
     """Represents a DrawingPointSchema in the Iconik system."""
-    x: int = Field(..., ge=-2147483648, le=2147483647)
-    y: int = Field(..., ge=-2147483648, le=2147483647)
+    x: float
+    y: float
 
 
 class Drawing(BaseModel):
     """Represents a Drawing in the Iconik system."""
     primitives: Optional[List['DrawingPrimitive']] = Field(default_factory=list)
+    version: Optional[int] = None
 
 
 class DrawingPrimitive(BaseModel):
@@ -1494,8 +1640,8 @@ class DrawingPrimitive(BaseModel):
 
 class DrawingPoint(BaseModel):
     """Represents a DrawingPoint in the Iconik system."""
-    x: int = Field(..., ge=-2147483648, le=2147483647)
-    y: int = Field(..., ge=-2147483648, le=2147483647)
+    x: float
+    y: float
 
 
 class DeleteSegmentsSchema(BaseModel):
@@ -1517,7 +1663,7 @@ class DeleteQueueCollectionsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -1531,7 +1677,7 @@ class DeleteQueueAssetsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -1557,10 +1703,35 @@ class CustomActionSchema(BaseModel):
     last_error: Optional[str] = None
     last_error_date: Optional[datetime] = None
     metadata_view: Optional[UUID] = None
+    publish_template_id: Optional[str] = None
     status: Optional[Literal['FAILING', 'HEALTHY']] = None
     system_domain_id: Optional[UUID] = None
     title: str
-    type: Optional[Literal['OPEN', 'POST']] = None
+    transcoder_id: Optional[UUID] = None
+    type: Optional[Literal['OPEN', 'POST', 'PUBLISH']] = None
+    url: str
+
+
+class CustomActionCreateSchema(BaseModel):
+    """Represents a CustomActionCreateSchema in the Iconik system."""
+    app_id: Optional[UUID] = None
+    context: Literal['ASSET', 'ASSET_SUBCLIP', 'SHARED_ASSET', 'COLLECTION',
+                     'SHARED_COLLECTION', 'BULK', 'SAVED_SEARCH', 'NONE']
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    disabled: Optional[bool] = None
+    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
+    id: Optional[UUID] = None
+    last_error: Optional[str] = None
+    last_error_date: Optional[datetime] = None
+    metadata_view: Optional[UUID] = None
+    publish_template_id: Optional[str] = None
+    read_access_for_everyone: Optional[bool] = None
+    status: Optional[Literal['FAILING', 'HEALTHY']] = None
+    system_domain_id: Optional[UUID] = None
+    title: str
+    transcoder_id: Optional[UUID] = None
+    type: Optional[Literal['OPEN', 'POST', 'PUBLISH']] = None
     url: str
 
 
@@ -1568,6 +1739,10 @@ class CustomActionCallbackSchema(BaseModel):
     """Represents a CustomActionCallbackSchema in the Iconik system."""
     asset_ids: Optional[List[UUID]] = Field(default_factory=list)
     collection_ids: Optional[List[UUID]] = Field(default_factory=list)
+    from_collection_id: Optional[UUID] = Field(
+        None,
+        description="ID of a collection that the custom action was triggered from"
+    )
     metadata_values: Optional[Dict[str, 'MetadataFieldValueSchema']
                               ] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -1670,7 +1845,7 @@ class CollectionsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -1780,7 +1955,7 @@ class CollectionContentQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -1881,6 +2056,7 @@ class BulkShareCreateSchema(BaseModel):
     allow_user_search_for_mentions: Optional[bool] = None
     allow_view_transcriptions: Optional[bool] = None
     allow_view_versions: Optional[bool] = None
+    automatic_approval_share: Optional[bool] = None
     emails: Optional[List[str]] = Field(default_factory=list)
     expires: Optional[datetime] = None
     id: Optional[str] = None
@@ -1891,6 +2067,7 @@ class BulkShareCreateSchema(BaseModel):
     object_type: Optional[Literal['assets']] = None
     owner_id: Optional[str] = None
     password: Optional[str] = None
+    review_experience_public_beta: Optional[bool] = None
     share_by_url: Optional[bool] = None
     show_watermark: Optional[bool] = None
     system_domain_id: Optional[str] = None
@@ -1926,6 +2103,11 @@ class EditSegmentForBulk(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBox']
                                   ] = Field(default_factory=list)
     id: UUID
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -1981,6 +2163,11 @@ class EditAssetSegment(BaseModel):
     face_bounding_boxes: Optional[List['FaceBoundingBox']
                                   ] = Field(default_factory=list)
     id: UUID
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -2054,6 +2241,11 @@ class Segment(BaseModel):
                                   ] = Field(default_factory=list)
     has_drawing: Optional[Any] = None
     id: Optional[UUID] = None
+    is_internal: Optional[bool] = Field(
+        None,
+        description=
+        "If set to true, the segment is only visible to internal iconik users"
+    )
     keyframe_id: Optional[UUID] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     metadata_view_id: Optional[UUID] = None
@@ -2097,10 +2289,17 @@ class Segment(BaseModel):
 class FaceBoundingBox(BaseModel):
     """Represents a FaceBoundingBox in the Iconik system."""
     bounding_box: Optional[List[float]] = Field(default_factory=list)
-    face_id: UUID
+    landmarks: Optional[List['FaceLandmark']] = Field(default_factory=list)
+    person_version_face_id: UUID
     timestamp_ms: Optional[int] = Field(
         None, ge=-9223372036854775808, le=9223372036854775807
     )
+
+
+class FaceLandmark(BaseModel):
+    """Represents a FaceLandmark in the Iconik system."""
+    x: float
+    y: float
 
 
 class TranscriptionType(BaseModel):
@@ -2119,7 +2318,13 @@ class TranscriptionElementType(BaseModel):
 
 class BulkCollectionTransferSchema(BaseModel):
     """Represents a BulkCollectionTransferSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
+    destination_directory_path: Optional[str] = None
     include_assets: bool
     include_collections: bool
     job_id: UUID
@@ -2129,6 +2334,11 @@ class BulkCollectionTransferSchema(BaseModel):
 
 class BulkCollectionTranscribeSchema(BaseModel):
     """Represents a BulkCollectionTranscribeSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2137,6 +2347,11 @@ class BulkCollectionTranscribeSchema(BaseModel):
 
 class BulkCollectionTranscodeSchema(BaseModel):
     """Represents a BulkCollectionTranscodeSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2145,6 +2360,11 @@ class BulkCollectionTranscodeSchema(BaseModel):
 
 class BulkCollectionMetadataUpdateSchema(BaseModel):
     """Represents a BulkCollectionMetadataUpdateSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2153,6 +2373,11 @@ class BulkCollectionMetadataUpdateSchema(BaseModel):
 
 class BulkCollectionFaceExtractionSchema(BaseModel):
     """Represents a BulkCollectionFaceExtractionSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2168,6 +2393,11 @@ class BulkCollectionDeleteSchema(BaseModel):
 
 class BulkCollectionAnalyzeSchema(BaseModel):
     """Represents a BulkCollectionAnalyzeSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2176,6 +2406,11 @@ class BulkCollectionAnalyzeSchema(BaseModel):
 
 class BulkCollectionActionSchema(BaseModel):
     """Represents a BulkCollectionActionSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2184,6 +2419,11 @@ class BulkCollectionActionSchema(BaseModel):
 
 class BulkCollectionACLsUpdateSchema(BaseModel):
     """Represents a BulkCollectionACLsUpdateSchema in the Iconik system."""
+    callback_chunk_size: Optional[int] = None
+    callback_data: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    callback_data_request: Optional[Dict[str,
+                                         Any]] = Field(default_factory=dict)
+    callback_url: Optional[str] = None
     collection_ids: List[UUID]
     include_assets: bool
     include_collections: bool
@@ -2193,6 +2433,12 @@ class BulkCollectionACLsUpdateSchema(BaseModel):
 class BulkAssetVersionEditSchema(BaseModel):
     """Represents a BulkAssetVersionEditSchema in the Iconik system."""
     objects: List['AssetVersionsSchema']
+
+
+class BulkAssetPersonChangeSchema(BaseModel):
+    """Represents a BulkAssetPersonChangeSchema in the Iconik system."""
+    job_id: UUID
+    objects: List['AssetPersonChangeSchema']
 
 
 class BulkAssetEditSchema(BaseModel):
@@ -2218,7 +2464,7 @@ class BaseQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -2248,7 +2494,7 @@ class AssetsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     scroll: Optional[bool] = None
     scroll_id: Optional[UUID] = None
@@ -2264,7 +2510,7 @@ class AssetsHistoryQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -2383,6 +2629,7 @@ class AssetSchema(BaseModel):
     is_blocked: Optional[bool] = None
     is_online: Optional[bool] = None
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     original_asset_id: Optional[UUID] = None
     original_segment_id: Optional[UUID] = None
     original_version_id: Optional[UUID] = None
@@ -2402,6 +2649,18 @@ class AssetSchema(BaseModel):
     updated_by_user_info: Optional[Any] = None
     versions: Optional[List['AssetVersion']] = Field(default_factory=list)
     warning: Optional[str] = None
+
+
+class AssetPersonChangeSchema(BaseModel):
+    """Represents a AssetPersonChangeSchema in the Iconik system."""
+    asset_id: UUID
+    delete_source_person_from_version: Optional[bool] = None
+    destination_person_id: UUID
+    has_unconfirmed_persons: bool
+    person_ids_after: List[UUID]
+    source_person_id: UUID
+    update_segments: Optional[bool] = None
+    version_id: UUID
 
 
 # Type alias for AssetOrCollectionSchema.
@@ -2559,6 +2818,7 @@ class AssetElasticSchema(BaseModel):
     analyze_status: Optional[Literal['N/A', 'REQUESTED', 'IN_PROGRESS',
                                      'FAILED', 'DONE']] = None
     ancestor_collections: Optional[List[str]] = Field(default_factory=list)
+    approval: Optional[Any] = None
     archive_status: Optional[Literal['NOT_ARCHIVED', 'ARCHIVING',
                                      'FAILED_TO_ARCHIVE', 'ARCHIVED']] = None
     category: Optional[str] = None
@@ -2583,6 +2843,7 @@ class AssetElasticSchema(BaseModel):
                                               'FAILED', 'DONE']] = None
     favoured: Optional[bool] = None
     files: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    formats: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     has_unconfirmed_persons: Optional[bool] = None
     id: Optional[UUID] = None
     in_collections: Optional[List[str]] = Field(default_factory=list)
@@ -2590,6 +2851,7 @@ class AssetElasticSchema(BaseModel):
     is_online: Optional[bool] = None
     keyframes: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     media_type: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     object_type: Optional[str] = None
@@ -2618,16 +2880,6 @@ class AssetElasticSchema(BaseModel):
     warning: Optional[str] = None
 
 
-class RelationElastic(BaseModel):
-    """Represents a RelationElastic in the Iconik system."""
-    date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    description: Optional[str] = None
-    related_from_asset_id: Optional[UUID] = None
-    related_to_asset_id: Optional[UUID] = None
-    relation_type: Optional[str] = None
-
-
 class AssetVersion(BaseModel):
     """Represents a AssetVersion in the Iconik system."""
     analyze_status: Optional[Literal['N/A', 'REQUESTED', 'IN_PROGRESS',
@@ -2649,6 +2901,16 @@ class AssetVersion(BaseModel):
                                         'FAILED', 'DONE']] = None
     transcribed_languages: Optional[List[str]] = Field(default_factory=list)
     version_number: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+
+
+class RelationElastic(BaseModel):
+    """Represents a RelationElastic in the Iconik system."""
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    description: Optional[str] = None
+    related_from_asset_id: Optional[UUID] = None
+    related_to_asset_id: Optional[UUID] = None
+    relation_type: Optional[str] = None
 
 
 class AssetEditSchema(BaseModel):
@@ -2679,6 +2941,7 @@ class AssetEditSchema(BaseModel):
     is_blocked: Optional[bool] = None
     is_online: Optional[bool] = None
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     original_asset_id: Optional[UUID] = None
     original_segment_id: Optional[UUID] = None
     original_version_id: Optional[UUID] = None
@@ -2728,6 +2991,7 @@ class AssetCreateSchema(BaseModel):
     is_blocked: Optional[bool] = None
     is_online: Optional[bool] = None
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     original_asset_id: Optional[UUID] = None
     original_segment_id: Optional[UUID] = None
     original_version_id: Optional[UUID] = None
@@ -2776,6 +3040,7 @@ class AssetBaseSchema(BaseModel):
     is_blocked: Optional[bool] = None
     is_online: Optional[bool] = None
     last_archive_restore_date: Optional[datetime] = None
+    limit_download_to_groups: Optional[List[UUID]] = Field(default_factory=list)
     original_asset_id: Optional[UUID] = None
     original_segment_id: Optional[UUID] = None
     original_version_id: Optional[UUID] = None
@@ -2863,6 +3128,8 @@ class ApprovalBySchema(BaseModel):
 
 
 # Update forward references
+UploadStorageSchema.model_rebuild()
+UploadStorage.model_rebuild()
 TranscriptionTypeSchema.model_rebuild()
 TranscriptionElementTypeSchema.model_rebuild()
 SynchronizeCollectionKeyframesSchema.model_rebuild()
@@ -2932,6 +3199,7 @@ ProjectMemberCreateSchema.model_rebuild()
 ProjectMemberBaseSchema.model_rebuild()
 ProjectCreateSchema.model_rebuild()
 ProjectBaseSchema.model_rebuild()
+ProcessBulkPersonsSchema.model_rebuild()
 PlaylistsSchema.model_rebuild()
 PlaylistsQueryParamsSchema.model_rebuild()
 PlaylistSchema.model_rebuild()
@@ -2944,15 +3212,20 @@ PlaylistCreateSchema.model_rebuild()
 PlaylistItem.model_rebuild()
 PlaylistBaseSchema.model_rebuild()
 Playlist.model_rebuild()
+MagicLinkValidateSchema.model_rebuild()
+MagicLinkRequestSchema.model_rebuild()
+MagicLinkCheckSettingSchema.model_rebuild()
 ListObjectsSchema.model_rebuild()
 GetShareSchema.model_rebuild()
 ShareUser.model_rebuild()
 GetAssetsLatestVersionSchema.model_rebuild()
 FavoritesSchema.model_rebuild()
+FaceLandmarkSchema.model_rebuild()
 FaceBoundingBoxSchema.model_rebuild()
 EditSegmentSchema.model_rebuild()
 EditSegmentForBulkSchema.model_rebuild()
 EditPersonStatusSchema.model_rebuild()
+EditPersonAssetVersionSchema.model_rebuild()
 EditAssetVersionSchema.model_rebuild()
 EditAssetSegmentSchema.model_rebuild()
 DrawingSchema.model_rebuild()
@@ -2967,6 +3240,7 @@ DeleteQueueCollectionsQueryParamsSchema.model_rebuild()
 DeleteQueueAssetsQueryParamsSchema.model_rebuild()
 CustomActionsSchema.model_rebuild()
 CustomActionSchema.model_rebuild()
+CustomActionCreateSchema.model_rebuild()
 CustomActionCallbackSchema.model_rebuild()
 MetadataFieldValueSchema.model_rebuild()
 CustomActionCallbackReplySchema.model_rebuild()
@@ -3001,6 +3275,7 @@ BulkDeleteFromFavoritesSchema.model_rebuild()
 BulkCreateSegmentsSchema.model_rebuild()
 Segment.model_rebuild()
 FaceBoundingBox.model_rebuild()
+FaceLandmark.model_rebuild()
 TranscriptionType.model_rebuild()
 TranscriptionElementType.model_rebuild()
 BulkCollectionTransferSchema.model_rebuild()
@@ -3013,6 +3288,7 @@ BulkCollectionAnalyzeSchema.model_rebuild()
 BulkCollectionActionSchema.model_rebuild()
 BulkCollectionACLsUpdateSchema.model_rebuild()
 BulkAssetVersionEditSchema.model_rebuild()
+BulkAssetPersonChangeSchema.model_rebuild()
 BulkAssetEditSchema.model_rebuild()
 BulkAddToFavoritesSchema.model_rebuild()
 BulkActionSchema.model_rebuild()
@@ -3027,6 +3303,7 @@ AssetTranscriptionsPropertiesSchema.model_rebuild()
 AssetTranscriptionPropertiesSchema.model_rebuild()
 AssetTranscriptionFromSubtitleSchema.model_rebuild()
 AssetSchema.model_rebuild()
+AssetPersonChangeSchema.model_rebuild()
 CollectionElastic.model_rebuild()
 AssetHistorySchema.model_rebuild()
 AssetHistoryEntitiesSchema.model_rebuild()
@@ -3034,8 +3311,8 @@ AssetHistoryElasticSchema.model_rebuild()
 AssetHistoryBulkSchema.model_rebuild()
 AssetHistoryBaseSchema.model_rebuild()
 AssetElasticSchema.model_rebuild()
-RelationElastic.model_rebuild()
 AssetVersion.model_rebuild()
+RelationElastic.model_rebuild()
 AssetEditSchema.model_rebuild()
 AssetCreateSchema.model_rebuild()
 AssetBaseSchema.model_rebuild()

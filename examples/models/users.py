@@ -32,7 +32,7 @@ class UsersQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -43,6 +43,73 @@ class UsersQueryParamsSchema(BaseModel):
 class UsersByEmailsSchema(BaseModel):
     """Represents a UsersByEmailsSchema in the Iconik system."""
     emails: List[str]
+
+
+class UsersBasicSchema(BaseModel):
+    """Represents a UsersBasicSchema in the Iconik system."""
+    facets: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List['UserBasicElasticSchema']
+                      ] = Field(default_factory=list)
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class UserWithSeparatedGroupsSchema(BaseModel):
+    """Represents a UserWithSeparatedGroupsSchema in the Iconik system."""
+    app_id: Optional[UUID] = None
+    date_checklist_completed: Optional[datetime] = None
+    date_created: Optional[datetime] = None
+    date_first_uploaded: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
+    date_terms_accepted: Optional[datetime] = None
+    date_welcomed: Optional[datetime] = None
+    description: Optional[str] = Field(
+        None, description="Available only for admin users"
+    )
+    disable_mixpanel: Optional[bool] = None
+    email: Optional[str] = None
+    email_marketing_consent: Optional[bool] = None
+    first_name: Optional[str] = None
+    groups: Optional[List[UUID]] = Field(default_factory=list)
+    hide_email: Optional[bool] = None
+    hide_phone: Optional[bool] = None
+    id: Optional[UUID] = None
+    identity_provider_id: Optional[UUID] = None
+    is_admin: Optional[bool] = None
+    is_super_admin: Optional[bool] = None
+    is_super_admin_light: Optional[bool] = None
+    last_name: Optional[str] = None
+    last_successful_auth: Optional[datetime] = None
+    last_unsuccessful_auth: Optional[datetime] = None
+    last_web_login: Optional[datetime] = None
+    metadata: Optional[Any] = None
+    onboarding_goal: Optional[Literal['CENTRALIZE', 'COLLABORATE',
+                                      'REVISIT']] = None
+    password: Optional[str] = None
+    password_changed: Optional[datetime] = None
+    phone: Optional[str] = None
+    photo: Optional[str] = None
+    photo_big: Optional[str] = None
+    photo_small: Optional[str] = None
+    photo_storage_id: Optional[UUID] = None
+    primary_group: Optional[UUID] = None
+    role_groups: Optional[List[UUID]] = Field(default_factory=list)
+    status: Optional[Literal['INACTIVE', 'ACTIVE', 'BLOCKED', 'DELETED']] = None
+    system_domain_id: Optional[UUID] = None
+    system_domains: Optional[List[UUID]] = Field(default_factory=list)
+    system_metadata: Optional[Any] = None
+    system_name: Optional[str] = None
+    teams: Optional[List[UUID]] = Field(default_factory=list)
+    type: Literal['POWER', 'STANDARD', 'BROWSE_ONLY', 'BROWSE_API_ONLY']
 
 
 class UserSystemMetadataSchema(BaseModel):
@@ -62,6 +129,7 @@ class UserSchema(BaseModel):
     date_created: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
     date_modified: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -70,7 +138,7 @@ class UserSchema(BaseModel):
     disable_mixpanel: Optional[bool] = None
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -123,11 +191,12 @@ class UserSamlCreateSchema(BaseModel):
     date_created: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
     date_modified: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     email: str
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     group_names: Optional[List[str]] = Field(default_factory=list)
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
@@ -186,6 +255,7 @@ class UserElasticSchema(BaseModel):
     date_created: Optional[str] = None
     date_first_uploaded: Optional[datetime] = None
     date_modified: Optional[str] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -193,7 +263,7 @@ class UserElasticSchema(BaseModel):
     )
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -229,6 +299,7 @@ class UserEditSchema(BaseModel):
     current_password: Optional[str] = None
     date_checklist_completed: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -236,7 +307,7 @@ class UserEditSchema(BaseModel):
     )
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -272,6 +343,7 @@ class UserEditInternalSchema(BaseModel):
     current_password: Optional[str] = None
     date_checklist_completed: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -279,7 +351,7 @@ class UserEditInternalSchema(BaseModel):
     )
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -316,6 +388,7 @@ class UserCreateSchema(BaseModel):
     date_created: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
     date_modified: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -323,7 +396,7 @@ class UserCreateSchema(BaseModel):
     )
     email: str
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -365,15 +438,28 @@ class UserByEmailAndLoginTypeSchema(BaseModel):
     login_type: Optional[Literal['SSO', 'PASSWORD']] = None
 
 
+class UserBasicElasticSchema(BaseModel):
+    """Represents a UserBasicElasticSchema in the Iconik system."""
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    id: Optional[UUID] = None
+    last_name: Optional[str] = None
+    photo: Optional[str] = None
+    photo_big: Optional[str] = None
+    photo_small: Optional[str] = None
+    photo_storage_id: Optional[UUID] = None
+
+
 class UserBaseSchema(BaseModel):
     """Represents a UserBaseSchema in the Iconik system."""
     date_checklist_completed: Optional[datetime] = None
     date_first_uploaded: Optional[datetime] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -404,6 +490,76 @@ class UserBaseSchema(BaseModel):
     type: Literal['POWER', 'STANDARD', 'BROWSE_ONLY', 'BROWSE_API_ONLY']
 
 
+class TeamsSchema(BaseModel):
+    """Represents a TeamsSchema in the Iconik system."""
+    facets: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List['GroupElasticSchema']] = Field(default_factory=list)
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class TeamSchema(BaseModel):
+    """Represents a TeamSchema in the Iconik system."""
+    alias: Optional[str] = None
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    default_user_type: Optional[str] = None
+    description: Optional[str] = None
+    external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
+    id: Optional[UUID] = None
+    is_saml_group: Optional[bool] = None
+    logo: Optional[str] = None
+    name: str
+    saml_primary_group_priority: Optional[int] = Field(
+        None, ge=-2147483648, le=2147483647
+    )
+
+
+class RoleGroupsSchema(BaseModel):
+    """Represents a RoleGroupsSchema in the Iconik system."""
+    facets: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List['GroupWithRolesElasticSchema']
+                      ] = Field(default_factory=list)
+    page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    prev_url: Optional[str] = None
+    total: Optional[int] = Field(
+        None, ge=-9223372036854775808, le=9223372036854775807
+    )
+
+
+class RoleGroupSchema(BaseModel):
+    """Represents a RoleGroupSchema in the Iconik system."""
+    alias: Optional[str] = None
+    date_created: Optional[datetime] = None
+    date_modified: Optional[datetime] = None
+    default_user_type: Optional[str] = None
+    description: Optional[str] = None
+    external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
+    id: Optional[UUID] = None
+    is_saml_group: Optional[bool] = None
+    name: str
+    role_categories: Optional[Any] = None
+    roles: Optional[List[str]] = Field(default_factory=list)
+    saml_primary_group_priority: Optional[int] = Field(
+        None, ge=-2147483648, le=2147483647
+    )
+
+
 class RoleCategoriesSchema(BaseModel):
     """Represents a RoleCategoriesSchema in the Iconik system."""
     assets_edit: Optional[bool] = None
@@ -411,6 +567,7 @@ class RoleCategoriesSchema(BaseModel):
     collaborate: Optional[bool] = None
     core: Optional[bool] = None
     download: Optional[bool] = None
+    face_recognition: Optional[bool] = None
     integrations_admin: Optional[bool] = None
     metadata_admin: Optional[bool] = None
     organize: Optional[bool] = None
@@ -427,6 +584,7 @@ class RoleCategories(BaseModel):
     collaborate: Optional[bool] = None
     core: Optional[bool] = None
     download: Optional[bool] = None
+    face_recognition: Optional[bool] = None
     integrations_admin: Optional[bool] = None
     metadata_admin: Optional[bool] = None
     organize: Optional[bool] = None
@@ -510,7 +668,8 @@ class GroupsSchema(BaseModel):
     first_url: Optional[str] = None
     last_url: Optional[str] = None
     next_url: Optional[str] = None
-    objects: Optional[List['GroupElasticSchema']] = Field(default_factory=list)
+    objects: Optional[List['GroupWithRolesElasticSchema']
+                      ] = Field(default_factory=list)
     page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
@@ -526,11 +685,47 @@ class GroupsQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
         description="A comma separated list of fieldnames with order (asc/desc)"
+    )
+
+
+class GroupWithRolesElasticSchema(BaseModel):
+    """Represents a GroupWithRolesElasticSchema in the Iconik system."""
+    alias: Optional[str] = None
+    date_created: Optional[str] = None
+    date_modified: Optional[str] = None
+    default_user_type: Optional[str] = None
+    description: Optional[str] = None
+    external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
+    id: Optional[UUID] = None
+    is_saml_group: Optional[bool] = None
+    name: str
+    role_categories: Optional[Any] = None
+    roles: Optional[List[str]] = Field(default_factory=list)
+    saml_primary_group_priority: Optional[int] = Field(
+        None, ge=-2147483648, le=2147483647
+    )
+
+
+class GroupWithRolesBaseSchema(BaseModel):
+    """Represents a GroupWithRolesBaseSchema in the Iconik system."""
+    alias: Optional[str] = None
+    default_user_type: Optional[str] = None
+    description: Optional[str] = None
+    external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
+    id: Optional[UUID] = None
+    is_saml_group: Optional[bool] = None
+    name: str
+    role_categories: Optional[Any] = None
+    roles: Optional[List[str]] = Field(default_factory=list)
+    saml_primary_group_priority: Optional[int] = Field(
+        None, ge=-2147483648, le=2147483647
     )
 
 
@@ -542,6 +737,7 @@ class GroupSchema(BaseModel):
     default_user_type: Optional[str] = None
     description: Optional[str] = None
     external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
     id: Optional[UUID] = None
     is_saml_group: Optional[bool] = None
     logo: Optional[str] = None
@@ -582,12 +778,10 @@ class GroupElasticSchema(BaseModel):
     default_user_type: Optional[str] = None
     description: Optional[str] = None
     external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
     id: Optional[UUID] = None
     is_saml_group: Optional[bool] = None
-    logo: Optional[str] = None
     name: str
-    role_categories: Optional[Any] = None
-    roles: Optional[List[str]] = Field(default_factory=list)
     saml_primary_group_priority: Optional[int] = Field(
         None, ge=-2147483648, le=2147483647
     )
@@ -601,9 +795,9 @@ class GroupCreateSchema(BaseModel):
     default_user_type: Optional[str] = None
     description: Optional[str] = None
     external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
     id: Optional[UUID] = None
     is_saml_group: Optional[bool] = None
-    logo: Optional[str] = None
     name: str
     role_categories: Optional[Any] = None
     roles: Optional[List[str]] = Field(default_factory=list)
@@ -619,12 +813,10 @@ class GroupBaseSchema(BaseModel):
     default_user_type: Optional[str] = None
     description: Optional[str] = None
     external_id: Optional[str] = None
+    group_type: Optional[Literal['TEAM', 'ROLE_GROUP']] = None
     id: Optional[UUID] = None
     is_saml_group: Optional[bool] = None
-    logo: Optional[str] = None
     name: str
-    role_categories: Optional[Any] = None
-    roles: Optional[List[str]] = Field(default_factory=list)
     saml_primary_group_priority: Optional[int] = Field(
         None, ge=-2147483648, le=2147483647
     )
@@ -655,6 +847,7 @@ class UserElastic(BaseModel):
     date_created: Optional[str] = None
     date_first_uploaded: Optional[datetime] = None
     date_modified: Optional[str] = None
+    date_returned: Optional[datetime] = None
     date_terms_accepted: Optional[datetime] = None
     date_welcomed: Optional[datetime] = None
     description: Optional[str] = Field(
@@ -662,7 +855,7 @@ class UserElastic(BaseModel):
     )
     email: Optional[str] = None
     email_marketing_consent: Optional[bool] = None
-    first_name: str
+    first_name: Optional[str] = None
     groups: Optional[List[UUID]] = Field(default_factory=list)
     hide_email: Optional[bool] = None
     hide_phone: Optional[bool] = None
@@ -699,7 +892,7 @@ class BaseQueryParamsSchema(BaseModel):
         None, ge=1, le=10000, description="Which page number to fetch"
     )
     per_page: Optional[int] = Field(
-        None, ge=0, le=1000, description="The number of items for each page"
+        None, ge=1, le=1000, description="The number of items for each page"
     )
     sort: Optional[str] = Field(
         None,
@@ -711,6 +904,8 @@ class BaseQueryParamsSchema(BaseModel):
 UsersSchema.model_rebuild()
 UsersQueryParamsSchema.model_rebuild()
 UsersByEmailsSchema.model_rebuild()
+UsersBasicSchema.model_rebuild()
+UserWithSeparatedGroupsSchema.model_rebuild()
 UserSystemMetadataSchema.model_rebuild()
 UserSystemMetadata.model_rebuild()
 UserSchema.model_rebuild()
@@ -726,7 +921,12 @@ UserEditInternalSchema.model_rebuild()
 UserCreateSchema.model_rebuild()
 UserByEmailSchema.model_rebuild()
 UserByEmailAndLoginTypeSchema.model_rebuild()
+UserBasicElasticSchema.model_rebuild()
 UserBaseSchema.model_rebuild()
+TeamsSchema.model_rebuild()
+TeamSchema.model_rebuild()
+RoleGroupsSchema.model_rebuild()
+RoleGroupSchema.model_rebuild()
 RoleCategoriesSchema.model_rebuild()
 RoleCategories.model_rebuild()
 ReindexUserSchema.model_rebuild()
@@ -741,6 +941,8 @@ MultiplatformUserPasswordEditSchema.model_rebuild()
 ListObjectsSchema.model_rebuild()
 GroupsSchema.model_rebuild()
 GroupsQueryParamsSchema.model_rebuild()
+GroupWithRolesElasticSchema.model_rebuild()
+GroupWithRolesBaseSchema.model_rebuild()
 GroupSchema.model_rebuild()
 GroupMappingsSchema.model_rebuild()
 GroupMappingSchema.model_rebuild()

@@ -17,150 +17,150 @@ class WebhooksSchema(BaseModel):
 
 class WebhookSchema(BaseModel):
     """Represents a WebhookSchema in the Iconik system."""
+    first_failed_at: Optional[datetime] = None
+    description: Optional[str] = None
     name: Optional[str] = None
     date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    last_error: Optional[str] = None
-    first_failed_at: Optional[datetime] = None
-    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    deleted_at: Optional[datetime] = None
     url: str = Field(
         ...,
         description="URL you want to be called when notification is appeared"
     )
-    object_id: Optional[UUID] = Field(
-        None, description="ID of a particular object you want to subscribe on"
+    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
+    realm: Optional[str] = Field(
+        None,
+        description="Realm of event. Example entity, contents, acls, metadata"
     )
-    id: UUID
+    event_type: str = Field(
+        ..., description="Type of events. Example assets, collections"
+    )
+    operation: Optional[str] = Field(
+        None, description="Operation of event. Example create, update, delete"
+    )
+    last_payload: Optional[str] = None
+    last_error: Optional[str] = None
+    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    date_modified: Optional[datetime] = None
     query: Optional[str] = Field(
         None,
         description=
         "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
     )
-    realm: Optional[str] = Field(
-        None,
-        description="Realm of event. Example entity, contents, acls, metadata"
+    object_id: Optional[UUID] = Field(
+        None, description="ID of a particular object you want to subscribe on"
     )
-    description: Optional[str] = None
-    deleted_at: Optional[datetime] = None
-    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
-    operation: Optional[str] = Field(
-        None, description="Operation of event. Example create, update, delete"
-    )
-    event_type: str = Field(
-        ..., description="Type of events. Example assets, collections"
-    )
-    last_payload: Optional[str] = None
+    id: UUID
 
 
 class WebhookInternalSchema(BaseModel):
     """Represents a WebhookInternalSchema in the Iconik system."""
+    first_failed_at: Optional[datetime] = None
+    description: Optional[str] = None
     name: Optional[str] = None
     date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    last_error: Optional[str] = None
-    first_failed_at: Optional[datetime] = None
-    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    deleted_at: Optional[datetime] = None
     url: str = Field(
         ...,
         description="URL you want to be called when notification is appeared"
     )
-    object_id: Optional[UUID] = Field(
-        None, description="ID of a particular object you want to subscribe on"
+    headers: Optional[str] = None
+    realm: Optional[str] = Field(
+        None,
+        description="Realm of event. Example entity, contents, acls, metadata"
     )
-    id: UUID
+    event_type: str = Field(
+        ..., description="Type of events. Example assets, collections"
+    )
+    operation: Optional[str] = Field(
+        None, description="Operation of event. Example create, update, delete"
+    )
+    last_payload: Optional[str] = None
+    last_error: Optional[str] = None
+    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    date_modified: Optional[datetime] = None
     query: Optional[str] = Field(
         None,
         description=
         "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
     )
-    realm: Optional[str] = Field(
-        None,
-        description="Realm of event. Example entity, contents, acls, metadata"
+    object_id: Optional[UUID] = Field(
+        None, description="ID of a particular object you want to subscribe on"
     )
-    description: Optional[str] = None
-    deleted_at: Optional[datetime] = None
-    headers: Optional[str] = None
-    operation: Optional[str] = Field(
-        None, description="Operation of event. Example create, update, delete"
-    )
-    event_type: str = Field(
-        ..., description="Type of events. Example assets, collections"
-    )
-    last_payload: Optional[str] = None
+    id: UUID
 
 
 class WebhookCreateSchema(BaseModel):
     """Represents a WebhookCreateSchema in the Iconik system."""
+    first_failed_at: Optional[datetime] = None
+    description: Optional[str] = None
     name: Optional[str] = None
     date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    last_error: Optional[str] = None
-    first_failed_at: Optional[datetime] = None
-    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    deleted_at: Optional[datetime] = None
     url: str = Field(
         ...,
         description="URL you want to be called when notification is appeared"
+    )
+    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
+    realm: Optional[str] = Field(
+        None,
+        description="Realm of event. Example entity, contents, acls, metadata"
+    )
+    event_type: str = Field(
+        ..., description="Type of events. Example assets, collections"
+    )
+    operation: Optional[str] = Field(
+        None, description="Operation of event. Example create, update, delete"
+    )
+    last_payload: Optional[str] = None
+    last_error: Optional[str] = None
+    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    date_modified: Optional[datetime] = None
+    query: Optional[str] = Field(
+        None,
+        description=
+        "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
     )
     object_id: Optional[UUID] = Field(
         None, description="ID of a particular object you want to subscribe on"
     )
     id: Optional[UUID] = None
-    query: Optional[str] = Field(
-        None,
-        description=
-        "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
-    )
-    realm: Optional[str] = Field(
-        None,
-        description="Realm of event. Example entity, contents, acls, metadata"
-    )
-    description: Optional[str] = None
-    deleted_at: Optional[datetime] = None
-    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
-    operation: Optional[str] = Field(
-        None, description="Operation of event. Example create, update, delete"
-    )
-    event_type: str = Field(
-        ..., description="Type of events. Example assets, collections"
-    )
-    last_payload: Optional[str] = None
 
 
 class WebhookBaseSchema(BaseModel):
     """Represents a WebhookBaseSchema in the Iconik system."""
+    first_failed_at: Optional[datetime] = None
+    description: Optional[str] = None
     name: Optional[str] = None
     date_created: Optional[datetime] = None
-    date_modified: Optional[datetime] = None
-    last_error: Optional[str] = None
-    first_failed_at: Optional[datetime] = None
-    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    deleted_at: Optional[datetime] = None
     url: str = Field(
         ...,
         description="URL you want to be called when notification is appeared"
+    )
+    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
+    realm: Optional[str] = Field(
+        None,
+        description="Realm of event. Example entity, contents, acls, metadata"
+    )
+    event_type: str = Field(
+        ..., description="Type of events. Example assets, collections"
+    )
+    operation: Optional[str] = Field(
+        None, description="Operation of event. Example create, update, delete"
+    )
+    last_payload: Optional[str] = None
+    last_error: Optional[str] = None
+    status: Literal['ENABLED', 'DISABLED', 'FAILING', 'DELETED']
+    date_modified: Optional[datetime] = None
+    query: Optional[str] = Field(
+        None,
+        description=
+        "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
     )
     object_id: Optional[UUID] = Field(
         None, description="ID of a particular object you want to subscribe on"
     )
     id: UUID
-    query: Optional[str] = Field(
-        None,
-        description=
-        "Adding a query allows filtering out messages so webhooks will be called only if for messages that match this query."
-    )
-    realm: Optional[str] = Field(
-        None,
-        description="Realm of event. Example entity, contents, acls, metadata"
-    )
-    description: Optional[str] = None
-    deleted_at: Optional[datetime] = None
-    headers: Optional[Dict[str, str]] = Field(default_factory=dict)
-    operation: Optional[str] = Field(
-        None, description="Operation of event. Example create, update, delete"
-    )
-    event_type: str = Field(
-        ..., description="Type of events. Example assets, collections"
-    )
-    last_payload: Optional[str] = None
 
 
 # Update forward references

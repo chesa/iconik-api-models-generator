@@ -70,6 +70,7 @@ class TranscodeQueueRecordSchema(BaseModel):
     status: Optional[str] = None
     system_domain_id: Optional[UUID] = None
     system_name: Optional[str] = None
+    transcoder_id: Optional[UUID] = None
     type: Optional[str] = None
     user_id: Optional[UUID] = None
     version_id: Optional[UUID] = None
@@ -252,6 +253,7 @@ class LocalStorageFileTranscodeJobSchema(BaseModel):
     format_id: str
     id: Optional[str] = None
     job_id: str
+    metadata_update_only: Optional[bool] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
     size: int = Field(..., ge=-9223372036854775808, le=9223372036854775807)
     version_id: str
@@ -422,6 +424,16 @@ class EdgeTranscodeJobSchema(BaseModel):
                         ] = Field(default_factory=list)
 
 
+class JobStep(BaseModel):
+    """Represents a JobStep in the Iconik system."""
+    date_created: Optional[datetime] = None
+    date_updated: Optional[datetime] = None
+    id: Optional[str] = None
+    label: Optional[str] = None
+    message: Optional[str] = None
+    status: Optional[str] = None
+
+
 class ThumbnailJob(BaseModel):
     """Represents a ThumbnailJob in the Iconik system."""
     height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
@@ -444,6 +456,20 @@ class ThumbnailJob(BaseModel):
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
 
 
+class TranscodeJob(BaseModel):
+    """Represents a TranscodeJob in the Iconik system."""
+    height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+    id: Optional[str] = None
+    output_endpoint: 'OutputEndpoint'
+    width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
+
+
+class OutputEndpoint(BaseModel):
+    """Represents a OutputEndpoint in the Iconik system."""
+    headers: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    key: str
+
+
 class InputSchema(BaseModel):
     """Represents a InputSchema in the Iconik system."""
     asset_id: Optional[str] = None
@@ -461,30 +487,6 @@ class InputSchema(BaseModel):
     storage_id: Optional[str] = None
     update_proxy_mediainfo: Optional[bool] = None
     version_id: Optional[str] = None
-
-
-class TranscodeJob(BaseModel):
-    """Represents a TranscodeJob in the Iconik system."""
-    height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    id: Optional[str] = None
-    output_endpoint: 'OutputEndpoint'
-    width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-
-
-class OutputEndpoint(BaseModel):
-    """Represents a OutputEndpoint in the Iconik system."""
-    headers: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    key: str
-
-
-class JobStep(BaseModel):
-    """Represents a JobStep in the Iconik system."""
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
-    id: Optional[str] = None
-    label: Optional[str] = None
-    message: Optional[str] = None
-    status: Optional[str] = None
 
 
 class EdgeTranscodeJobFieldSchema(BaseModel):
@@ -628,11 +630,11 @@ OutputEndpointSchema.model_rebuild()
 JobSchema.model_rebuild()
 Transcoders.model_rebuild()
 EdgeTranscodeJobSchema.model_rebuild()
+JobStep.model_rebuild()
 ThumbnailJob.model_rebuild()
-InputSchema.model_rebuild()
 TranscodeJob.model_rebuild()
 OutputEndpoint.model_rebuild()
-JobStep.model_rebuild()
+InputSchema.model_rebuild()
 EdgeTranscodeJobFieldSchema.model_rebuild()
 EdgeTranscodeInputSchema.model_rebuild()
 EndpointSchema.model_rebuild()

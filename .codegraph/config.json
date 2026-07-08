@@ -33,6 +33,7 @@
   ],
   "exclude": [
     "**/.git/**",
+    "**/examples/**",
     "**/node_modules/**",
     "**/vendor/**",
     "**/Pods/**",

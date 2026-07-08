@@ -1,4 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
+
 # Testing
 
 ## Test Framework and Setup
@@ -9,7 +10,7 @@ Tests use [pytest](https://docs.pytest.org/) `~8.3.5`, installed via the
 
 Install the dev dependencies before running tests:
 
-```bash
+``` bash
 pip install -e ".[dev]"
 ```
 
@@ -37,25 +38,25 @@ this tool. See `docs/ARCHITECTURE.md` for details on this distinction.
 
 Run the full suite from the project root:
 
-```bash
+``` bash
 pytest -v tests/
 ```
 
 Run with coverage and a JUnit XML report, matching what CI runs:
 
-```bash
+``` bash
 pytest -v tests/* --cov=src/dummy_module --junitxml=test-reports/report.xml
 ```
 
 Run a single test file:
 
-```bash
+``` bash
 pytest -v tests/test_dummy_module.py
 ```
 
 Run a single test function:
 
-```bash
+``` bash
 pytest -v tests/test_dummy_module.py::test_divide_by_zero
 ```
 
@@ -65,22 +66,22 @@ command is configured.
 
 ## Writing New Tests
 
-- Name new test files `test_*.py` and place them under `tests/`.
-- Name test functions `test_*` and test classes `Test*` to match the
-  `python_files`/`python_functions`/`python_classes` settings above.
-- `tests/__init__.py` exists but is an empty file — there is no shared
-  fixture/helper file (e.g. `conftest.py`) yet.
-- Follow the fixture pattern already used in
-  `tests/test_dummy_module.py`: a `@pytest.fixture` function returns a
-  fresh instance of the class under test, and individual `test_*`
-  functions take that fixture as an argument.
-- Because `pythonpath = ["src"]` is set, import modules under test with an
-  absolute path from `src/`, e.g. `from src.dummy_module import Calculator`
-  (as `tests/test_dummy_module.py` does) or `import generate_iconik_models`
-  for the real generator module.
-- If you add tests for `src/generate_iconik_models.py`, you will also need
-  to update the CI `--cov=` target in `bitbucket-pipelines.yml` (currently
-  scoped to `src/dummy_module` only — see CI Integration below).
+  - Name new test files `test_*.py` and place them under `tests/`.
+  - Name test functions `test_*` and test classes `Test*` to match the
+    `python_files`/`python_functions`/`python_classes` settings above.
+  - `tests/__init__.py` exists but is an empty file — there is no shared
+    fixture/helper file (e.g. `conftest.py`) yet.
+  - Follow the fixture pattern already used in
+    `tests/test_dummy_module.py`: a `@pytest.fixture` function returns a
+    fresh instance of the class under test, and individual `test_*`
+    functions take that fixture as an argument.
+  - Because `pythonpath = ["src"]` is set, import modules under test with an
+    absolute path from `src/`, e.g. `from src.dummy_module import Calculator`
+    (as `tests/test_dummy_module.py` does) or `import generate_iconik_models`
+    for the real generator module.
+  - If you add tests for `src/generate_iconik_models.py`, you will also need
+    to update the CI `--cov=` target in `bitbucket-pipelines.yml` (currently
+    scoped to `src/dummy_module` only — see CI Integration below).
 
 ## Coverage Requirements
 
@@ -92,14 +93,9 @@ it only measures the toy `dummy_module`, not the actual generator.
 
 ## CI Integration
 
-Tests run in Bitbucket Pipelines (`bitbucket-pipelines.yml`, `image:
-python:3.11`), in the `&test` step anchor:
-
-```bash
-pip install --upgrade pip
-pip install -e ".[dev]"
-pytest -v tests/* --cov=src/dummy_module --junitxml=test-reports/report.xml
-```
+Tests run in Bitbucket Pipelines (`bitbucket-pipelines.yml`, `image: python:3.11`), in the `&test` step anchor, which installs the `dev`
+extra and runs the same coverage command shown above under "Running
+Tests".
 
 The `test-reports/report.xml` JUnit report is retained as a pipeline
 artifact. The `&test` step runs in these pipelines:

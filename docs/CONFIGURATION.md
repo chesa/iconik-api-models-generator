@@ -1,18 +1,19 @@
 <!-- generated-by: gsd-doc-writer -->
+
 # Configuration
 
 `iconik-api-models-generator` is a command-line tool. It has no runtime
 `.env` file, no server configuration, and no environment variables
 required to run it locally. Configuration happens through:
 
-1. Command-line options passed to the `generate-iconik-models` entry
-   point.
-2. Hardcoded constants in `src/generate_iconik_models.py` that define
-   which Iconik API specifications are downloaded and where.
-3. `[tool.*]` sections in `pyproject.toml` that configure the optional
-   linting/formatting tools used during development and CI.
-4. A small set of deployment-only environment variables consumed by
-   `bitbucket-pipelines.yml` when publishing a release to PyPI.
+1.  Command-line options passed to the `generate-iconik-models` entry
+    point.
+2.  Hardcoded constants in `src/generate_iconik_models.py` that define
+    which Iconik API specifications are downloaded and where.
+3.  `[tool.*]` sections in `pyproject.toml` that configure the optional
+    linting/formatting tools used during development and CI.
+4.  A small set of deployment-only environment variables consumed by
+    `bitbucket-pipelines.yml` when publishing a release to PyPI.
 
 ## Environment Variables
 
@@ -27,8 +28,8 @@ Pipelines release step, not by the tool itself:
 | `PYPI_PASSWORD`  | Required (tag pipeline only) | PyPI account password/token used by `twine upload` in the `build-push-pypi` step. <!-- VERIFY: value configured in Bitbucket repository/deployment variables --> |
 
 These are set as Bitbucket Pipelines repository variables (see
-`bitbucket-pipelines.yml`, line 2: "Prerequisites: $PYPI_USERNAME and
-$PYPI_PASSWORD setup in the Deployment variables.") and are not present
+`bitbucket-pipelines.yml`, line 2: "Prerequisites: $PYPI\_USERNAME and
+$PYPI\_PASSWORD setup in the Deployment variables.") and are not present
 anywhere in the repository itself.
 
 ## Command-Line Options
@@ -68,8 +69,7 @@ check, and format the codebase:
 | `[tool.prettier]`            | Prettier            | Markdown formatting (`print-width = 72`, `tab-width = 4`).    |
 
 These sections are read automatically by each tool when invoked from
-the project root (e.g. `pylint --rcfile pyproject.toml --recursive yes
-src/`, `ruff check --config pyproject.toml src/`).
+the project root (e.g. `pylint --rcfile pyproject.toml --recursive yes src/`, `ruff check --config pyproject.toml src/`).
 
 ## Required vs. Optional Settings
 
@@ -111,4 +111,5 @@ The only place environment-specific configuration exists is in CI:
 security-scan steps, and a separate `tags` pipeline that additionally
 runs the `build-push-pypi` step using the `PYPI_USERNAME` /
 `PYPI_PASSWORD` deployment variables described above.
+
 <!-- VERIFY: exact Bitbucket deployment environment configuration (approvers, restrictions) is managed in the Bitbucket repository settings, not in this repo -->

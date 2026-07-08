@@ -8,7 +8,7 @@ v2 models package from their `components.schemas`.
 
 ## Installation
 
-```bash
+``` bash
 git clone git@github.com:chesa/iconik-api-models-generator.git
 cd iconik-api-models-generator
 
@@ -18,7 +18,7 @@ pip install -e .
 
 For development (linting, formatting, and test tools):
 
-```bash
+``` bash
 pip install -e ".[dev]"        # pylint, ruff, yapf, isort, pycln, mypy, pytest, black, flake8, toml-sort, uv
 pip install -e ".[formatters]" # just pycln, isort, yapf
 ```
@@ -27,7 +27,7 @@ Requires Python 3.9 or later.
 
 ## Quick Start
 
-```bash
+``` bash
 # Generate models into ./models (default output directory)
 generate-iconik-models
 
@@ -55,7 +55,7 @@ generated `__init__.py`.
 
 By default, one module is generated per iconik API specification:
 
-```
+``` 
 models/
 ├── __init__.py
 ├── acls.py
@@ -87,7 +87,7 @@ and may not reflect the current iconik API.
 Once you've generated the models package, import and use it like any
 other Python package:
 
-```python
+``` python
 from models import assets, files
 
 # Create an asset
@@ -109,15 +109,18 @@ file = files.FileCreateSchema(
 
 Passing `-F/--format-code` runs the generated package through:
 
-1. Import optimization with `pycln`
-2. Import organization with `isort`
-3. Trailing-whitespace removal
-4. Code style normalization with `yapf`
+1.  Import optimization with `pycln`
+2.  Import organization with `isort`
+3.  Trailing-whitespace and blank-line removal (via `sed`)
+4.  Code style normalization with `yapf`
 
-If you skip `-F` at generation time, you can run the same tools
-manually against the output directory:
+If you skip `-F` at generation time, you can run pycln/isort/yapf
+manually against the output directory, though this skips step 3 above
+(there's no standalone command for it here — `sed -i` syntax differs
+between BSD/macOS and GNU/Linux, so check `platform.system()` in
+`get_empty_line_removal_command()` if you need to reproduce it exactly):
 
-```bash
+``` bash
 pycln --all models/
 isort models/
 yapf -i models/*.py

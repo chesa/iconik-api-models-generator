@@ -1,4 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
+
 # Development
 
 This document covers local development setup, build/lint/test commands,
@@ -14,7 +15,7 @@ The project uses a standard `src`-layout Python package
 (`package-dir = {"" = "src"}` in `pyproject.toml`). To set up a
 development environment:
 
-```bash
+``` bash
 git clone git@github.com:chesa/iconik-api-models-generator.git
 cd iconik-api-models-generator
 
@@ -35,7 +36,7 @@ A lighter `formatters` extra (`pycln`, `isort`, `yapf`) is available if
 you only need to reformat code the generator produces, without the
 full lint/test toolchain:
 
-```bash
+``` bash
 pip install -e ".[formatters]"
 ```
 
@@ -45,7 +46,7 @@ full explanation of how the tool is configured.
 
 Run the generator itself once installed:
 
-```bash
+``` bash
 generate-iconik-models                      # writes to ./models
 generate-iconik-models -o OUTPUT_DIR -F      # custom dir + auto-format output
 generate-iconik-models --keep-downloads      # keep _specs/*.json alongside generated modules
@@ -55,8 +56,7 @@ generate-iconik-models --debug
 ## Build Commands
 
 This project has no bundler/build step for the generator itself — the
-package is pure Python, built via `setuptools` (`build-backend =
-"setuptools.build_meta"`). There are no `npm`-style `scripts` in
+package is pure Python, built via `setuptools` (`build-backend = "setuptools.build_meta"`). There are no `npm`-style `scripts` in
 `pyproject.toml`; the commands below are the ones actually run in
 `bitbucket-pipelines.yml` and documented in [CLAUDE.md](../CLAUDE.md).
 
@@ -79,10 +79,17 @@ source), run the same tools against an output directory instead of
 step of the generator (`format_generated_code()`), or manually cleaning
 generated output:
 
-```bash
+``` bash
 pycln --all models/
 isort models/
 yapf -i models/*.py
+```
+
+To sanity-check generated output for quality issues, point `pylint` at
+the output directory instead of `src/`:
+
+``` bash
+pylint --rcfile pyproject.toml --recursive yes models/
 ```
 
 ## Code Style
@@ -90,24 +97,26 @@ yapf -i models/*.py
 Code style is enforced with three tools, each configured in
 `pyproject.toml`:
 
-- **Ruff** (`[tool.ruff]`, `[tool.ruff.lint]`, `[tool.ruff.format]`) —
-  linting and formatting. `line-length = 80`, `target-version = "py39"`.
-  Run with: `ruff --config pyproject.toml check src/`
-- **Pylint** (`[tool.pylint.*]`) — static analysis. `fail-under = 9`,
-  `max-line-length = 80`. Run with:
-  `pylint --rcfile pyproject.toml --recursive yes src/`
-- **yapf** (`[tool.yapf]`) — code formatting, `based_on_style = "pep8"`,
-  `column_limit = 80`. Run with: `yapf --diff --recursive src/` to
-  preview changes, or `yapf -i --recursive src/` to apply them.
+  - **Ruff** (`[tool.ruff]`, `[tool.ruff.lint]`, `[tool.ruff.format]`) —
+    linting and formatting. `line-length = 80`, `target-version = "py39"`.
+    Run with: `ruff --config pyproject.toml check src/`
+  - **Pylint** (`[tool.pylint.*]`) — static analysis. `fail-under = 9`,
+    `max-line-length = 80`. Run with:
+    `pylint --rcfile pyproject.toml --recursive yes src/`
+  - **yapf** (`[tool.yapf]`) — code formatting, `based_on_style = "pep8"`,
+    `column_limit = 80`, `indent_width = 4`. Run with:
+    `yapf --diff --recursive src/` to preview changes, or
+    `yapf -i --recursive src/` to apply them.
 
 Additional tools configured but not run in the default CI `lint` step:
 `isort` (`[tool.isort]`, `profile = "pycharm"`), `mypy` (`[tool.mypy]`,
-`python_version = "3.9"`), and `black` (`[tool.black]`, `line-length =
-88`, used manually rather than in CI).
+`python_version = "3.9"`), and `black` (`[tool.black]`, `line-length = 88`, used manually rather than in CI).
 
-All of these are enforced automatically by the `lint` step in
-`bitbucket-pipelines.yml`, which runs on every push to `default` and on
-every pull request.
+All of these are enforced by the `lint` step in `bitbucket-pipelines.yml`,
+which runs on every push to `default` and on every pull request **that
+changes files under `src/**`** — the step is gated by a
+`condition.changesets.includePaths` check, so a PR that doesn't touch
+`src/` (e.g. a docs-only change) skips it.
 
 ## Branch Conventions
 
@@ -117,25 +126,26 @@ base new work on the default branch and open a pull request when
 ready. The default branch is `main`. `bitbucket-pipelines.yml` treats a
 `release` branch and any Git tag as special:
 
-- `branches.release` — runs `lint`, `test`, and `security-scan` under a
-  `Production` deployment stage.
-- `tags: '*'` — runs `lint`, `test`, `security-scan`, and
-  `build-push-pypi` (publishes to PyPI; tags must match the format
-  `v2025.5-beta.1` or `2025.5-beta.1` to match the package version).
+  - `branches.release` — runs `lint`, `test`, and `security-scan` under a
+    `Production` deployment stage.
+  - `tags: '*'` — runs `lint`, `test`, `security-scan`, and
+    `build-push-pypi` (publishes to PyPI; tags must match the format
+    `v2025.5-beta.1` or `2025.5-beta.1` to match the package version).
 
 ## PR Process
 
 See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for the full pull request
 process. Summary:
 
-- Keep pull requests focused on a single change; avoid bundling
-  unrelated fixes.
-- Ensure `ruff`, `pylint`, and `yapf --diff` (see Code Style above)
-  pass locally before opening the PR — the same checks run in CI and
-  must pass before merge.
-- Ensure `pytest -v tests/*` passes locally.
-- Describe what changed and why in the PR description; reference any
-  related issue.
-- CI runs the `lint` and `test` pipeline steps automatically on every
-  pull request (`bitbucket-pipelines.yml`, `pipelines.pull-requests`).
-  <!-- VERIFY: whether merge checks / required approvals are configured at the repository-host level, since this is not defined in the repository files -->
+  - Keep pull requests focused on a single change; avoid bundling
+    unrelated fixes.
+  - Ensure `ruff`, `pylint`, and `yapf --diff` (see Code Style above)
+    pass locally before opening the PR — the same checks run in CI and
+    must pass before merge.
+  - Ensure `pytest -v tests/*` passes locally.
+  - Describe what changed and why in the PR description; reference any
+    related issue.
+  - CI runs the `test` pipeline step on every pull request, and the
+    `lint` step whenever the pull request touches `src/**`
+    (`bitbucket-pipelines.yml`, `pipelines.pull-requests`).
+    <!-- VERIFY: whether merge checks / required approvals are configured at the repository-host level, since this is not defined in the repository files -->
